@@ -15,6 +15,43 @@
       <link rel="stylesheet" href="css/style.css">
       <!-- Responsive CSS -->
       <link rel="stylesheet" href="css/responsive.css">
+
+      <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            position: -webkit-sticky; /* For Safari */
+            position: sticky;
+            top: 0;
+            background-color: #fff; /* Add background color to prevent content overlap */
+            z-index: 1; /* Ensure the header is above table content */
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .table-container {
+            max-height: 600px; /* Adjust as needed */
+            overflow-y: auto;
+        }
+    </style>
+
    </head>
    <body>
       <!-- loader Start -->
@@ -78,32 +115,41 @@
                      <div class="iq-card">
                         <div class="iq-card-header d-flex justify-content-between">
                            <div class="iq-header-title">
-                              <h4 class="card-title">Order Summary</h4>
+                              <h4 class="card-title">Upload Summary</h4>
                            </div>
                            <div class="iq-card-header-toolbar d-flex align-items-center">
-                              <div class="dropdown">
-                                 <span class="dropdown-toggle text-primary" id="dropdownMenuButton5" data-toggle="dropdown">
-                                 <i class="ri-more-2-fill"></i>
-                                 </span>
-                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                                    <a class="dropdown-item" href="#"><i class="ri-eye-fill mr-2"></i>View</a>
-                                    <a class="dropdown-item" href="#"><i class="ri-delete-bin-6-fill mr-2"></i>Delete</a>
-                                    <a class="dropdown-item" href="#"><i class="ri-pencil-fill mr-2"></i>Edit</a>
-                                    <a class="dropdown-item" href="#"><i class="ri-printer-fill mr-2"></i>Print</a>
-                                    <a class="dropdown-item" href="#"><i class="ri-file-download-fill mr-2"></i>Download</a>
-                                 </div>
-                              </div>
+                           <a onclick="downloadSelection()" style="cursor: pointer;"><i class="ri-file-download-fill mr-2"></i>Download</a>
                            </div>
                         </div>
                         <div class="iq-card-body">
                            <div class="table-responsive">
+                              <div class="table-container">
                               <table id="table-ektp" class="table mb-0 table-borderless">
-                                 <thead>
+                                 <thead style="position:sticky">
                                     <tr>
-                                       <th scope="col">NIK</th>
+                                       <th><input style="max-width: 150px;" type="text" id="filter-nik" placeholder="Filter NIK"></th>
+                                       <th><input style="width: 150px;" type="text" id="filter-nama" placeholder="Filter Nama"></th>
+                                       <th><input style="width: 150px;" type="text" id="filter-kelurahan" placeholder="Filter Kelurahan"></th>
+                                       <th><input style="width: 150px;" type="text" id="filter-kecamatan" placeholder="Filter Kecamatan"></th>
+                                       <th><input style="width: 150px;" type="date" id="filter-upload-date" placeholder="Filter Upload Date"></th>
+                                       <th>
+                                       <select id="filter-status" style="width: 150px;">
+                                          <option value="">All Statuses</option>
+                                          <option value="uploaded">Uploaded</option>
+                                          <option value="downloaded">Downloaded</option>
+                                          <option value="rejected">Rejected</option>
+                                       </select>
+                                       <th>
+                                          <button type="button" id="filter-button" onclick="getFilteredData()" class="btn btn-primary mb-3">Filter</button>
+                                          <button type="button" id="reset-button" class="btn btn-secondary mb-3">Reset</button>
+                                       </th> <!-- No filter for the action column -->
+                                    </tr>
+                                    <tr>
+                                       <th scope="col"><input type="checkbox" id="checkAll">NIK</th>
                                        <th scope="col">Nama</th>
                                        <th scope="col">Kelurahan</th>
                                        <th scope="col">Kecamatan</th>
+                                       <th scope="col">Upload Date</th>
                                        <th scope="col">Status</th>
                                        <th scope="col">Action</th>
 
@@ -113,9 +159,11 @@
                                     
                                  </tbody>
                               </table>
+                              </div>
                            </div>
+                           
                            <nav aria-label="Page navigation example">
-                              <ul class="pagination justify-content-center" id="pagination">
+                              <ul class="pagination justify-content-center" id="pagination" style="cursor:pointer">
                                  <li class="page-item disabled">
                                     <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
                                  </li>
@@ -185,6 +233,12 @@
       <!-- Custom JavaScript -->
       <script src="js/custom.js"></script>
 
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+      <?php include("js-helper.php") ?>
+      <?php include("index-table-manipulation.php") ?>
+
       <script>
 
          getAllData();
@@ -210,107 +264,74 @@
             });
          }
 
-         function setupPagination(totalItems, itemsPerPage) {
-                const pagination = $("#pagination");
-                pagination.empty();
+         function getFilteredData(){
+            const filters = {
+               func : 'getFilteredData',
+               nik: $('#filter-nik').val().toLowerCase(),
+               nama: $('#filter-nama').val().toLowerCase(),
+               kelurahan: $('#filter-kelurahan').val().toLowerCase(),
+               kecamatan: $('#filter-kecamatan').val().toLowerCase(),
+               uploadDate: $('#filter-upload-date').val().toLowerCase(),
+               status: $('#filter-status').val().toLowerCase()
+            };
 
-                const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-                if (currentPage > 1) {
-                    const prev = $('<li class="page-item"><a class="page-link">Previous</a></li>');
-                    prev.click(function() {
-                        currentPage--;
-                        displayPage(currentPage);
-                    });
-                    pagination.append(prev);
+            $.ajax({
+               url: "ajax.php",
+               type: "GET",
+               data : filters,
+               success: function(response) {
+                    dataCache = response;
+                    setupPagination(dataCache.length, itemsPerPage);
+                    displayPage(currentPage);
+                    console.log(dataCache);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error: " + error);
                 }
+            });
+         }
 
-                for (let i = 1; i <= totalPages; i++) {
-                    const page = $(`<li class="page-item"><a class="page-link">${i}</a></li>`);
-                    if (i === currentPage) {
-                        page.addClass("active");
-                    }
-                    page.click(function() {
-                        currentPage = i;
-                        displayPage(currentPage);
-                    });
-                    pagination.append(page);
-                }
 
-                if (currentPage < totalPages) {
-                    const next = $('<li class="page-item"><a class="page-link">Next</a></li>');
-                    next.click(function() {
-                        currentPage++;
-                        displayPage(currentPage);
-                    });
-                    pagination.append(next);
-                }
+
+            function getNikList(){
+               const table = document.getElementById('table-ektp');
+               const rows = table.getElementsByTagName('tr');
+               const collectedData = [];
+
+               
+               for (let i = 0; i < rows.length; i++) {
+                  const row = rows[i];
+                  const checkbox = row.querySelector('input[type="checkbox"]');
+                  
+                  if (checkbox && checkbox.checked) {
+                     const rowData = {
+                        nik: row.cells[0].innerText.trim(), // Adjust substring as needed to remove leading space
+                     };
+                     collectedData.push(rowData);
+                  }
+               }
+
+               return collectedData;
+               
             }
 
-            function displayPage(page) {
-                const tableBody = $("#table-ektp tbody");
-                tableBody.empty();
+            
 
-                const startIndex = (page - 1) * itemsPerPage;
-                const endIndex = startIndex + itemsPerPage;
-                const pageData = dataCache.slice(startIndex, endIndex);
+            
 
-                pageData.forEach(item => {
-                    const row = createRow(item);
-                    tableBody.append(row);
-                });
+            
 
-                setupPagination(dataCache.length, itemsPerPage);
-            }
 
-            function createRow(data) {
-                const tr = document.createElement('tr');
 
-                const tdNik = document.createElement('td');
-                tdNik.textContent = data.nik;
-                tr.appendChild(tdNik);
 
-                const tdNama = document.createElement('td');
-                tdNama.textContent = data.nama;
-                tr.appendChild(tdNama);
+            document.getElementById('checkAll').addEventListener('change', function() {
+               const checkboxes = document.querySelectorAll('#table-ektp    tbody input[type="checkbox"]');
+               for (const checkbox of checkboxes) {
+                  checkbox.checked = this.checked;
+               }
+            });
 
-                const tdKelurahan = document.createElement('td');
-                tdKelurahan.textContent = data.address_kel_des;
-                tr.appendChild(tdKelurahan);
-
-                const tdKecamatan = document.createElement('td');
-                tdKecamatan.textContent = data.address_kec;
-                tr.appendChild(tdKecamatan);
-
-                const tdStatus = document.createElement('td');
-                const statusBadge = document.createElement('div');
-                statusBadge.className = 'badge badge-pill';
-                if (data.status === 'downloaded') {
-                    statusBadge.classList.add('badge-success');
-                    statusBadge.textContent = 'Moving';
-                } else {
-                    statusBadge.classList.add('badge-primary');
-                    statusBadge.textContent = 'Uploaded';
-                }
-                tdStatus.appendChild(statusBadge);
-                tr.appendChild(tdStatus);
-
-                const tdAction = document.createElement('td');
-
-                const downloadBadge = document.createElement('div');
-                downloadBadge.className = 'badge badge-pill badge-success';
-                downloadBadge.textContent = 'Download';
-                tdAction.appendChild(downloadBadge);
-
-                const deleteBadge = document.createElement('div');
-                deleteBadge.className = 'badge badge-pill badge-warning';
-                deleteBadge.textContent = 'Delete';
-                tdAction.appendChild(deleteBadge);
-
-                tr.appendChild(tdAction);
-
-                return tr;
-            }
+           
 
       </script>
    </body>
