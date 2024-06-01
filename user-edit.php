@@ -1,10 +1,34 @@
+<?php include('page-protection.php') ?>
+<?php include('connection.php') ?>
+<?php
+  $conn = getConn();
+  $username = mysqli_escape_string($conn, $_GET['username']);
+
+  if($_SESSION['role'] !== 'administrator'){
+   if($username != $_SESSION['username']){
+      header("Location: not-found.php");
+      exit();
+   }
+  }
+
+  $sql = "SELECT username, phone, address, role FROM users WHERE username='$username'";
+  $result = mysqli_query($conn, $sql);
+
+  $user = mysqli_fetch_object($result);
+
+  if(!$user){
+     header("Location: not-found.php");
+     exit();
+  }
+
+?>
 <!doctype html>
 <html lang="en">
    <head>
       <!-- Required meta tags -->
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-      <title>Sofbox - Responsive Bootstrap 4 Admin Dashboard Template</title>
+      <title>OCR - User Edit</title>
       <!-- Favicon -->
       <link rel="shortcut icon" href="images/favicon.ico" />
       <!-- Bootstrap CSS -->
@@ -77,37 +101,42 @@
                                     </div>
                                  </div>
                                  <div class="iq-card-body">
-                                    <form>
-                                       <div class=" row align-items-center">
-                                          <div class="form-group col-sm-6">
-                                             <label for="fname">Nama</label>
-                                             <input type="text" class="form-control" id="fname">
-                                          </div>
-                                          <div class="form-group col-sm-6">
-                                             <label for="lname">Hand Phone</label>
-                                             <input type="text" class="form-control" id="phone">
-                                          </div>
-                                          <div class="form-group col-sm-6">
-                                             <label for="uname">Username</label>
-                                             <input type="text" class="form-control" id="uname">
-                                          </div>
-                                          <div class="form-group col-sm-6">
-                                             <label for="cname">Email</label>
-                                             <input type="text" class="form-control" id="email">
-                                          </div>
-                                          <!-- <div class="form-group col-sm-12">
-                                             <label>Address:</label>
-                                             <textarea class="form-control" name="address" rows="5" value="" style="line-height: 22px;">
-                                                37 Cardinal Lane
-                                                Petersburg, VA 23803
-                                                United States of America
-                                                Zip Code: 85001
-                                             </textarea>
-                                          </div> -->
+                                 <?php $error = isset($_GET['error']) ? $_GET['error'] : ''; ?>
+                                 <div class="alert alert-danger" role="alert" <?php echo empty($error) ? 'hidden' : ''; ?>>
+                                    <div class="iq-alert-text"><?php echo $error; ?></div>
+                                 </div>
+                                 <?php $succeed = isset($_GET['success']) ? $_GET['success'] : ''; ?>
+                                 <div class="alert alert-success" role="alert" <?php echo empty($succeed) ? 'hidden' : ''; ?>>
+                                    <div class="iq-alert-text"><?php echo $succeed; ?></div>
+                                 </div>
+                                 <form action="ajax-user.php" method="POST">
+                                    <div class="row align-items-center">
+                                       <div class="form-group col-sm-6">
+                                             <label for="username">Username</label>
+                                             <input type="text" class="form-control" id="username" name="username" readonly value="<?php echo $user->username; ?>">
                                        </div>
-                                       <button type="submit" class="btn btn-primary mr-2">Submit</button>
-                                       <button type="reset" class="btn iq-bg-danger">Cancel</button>
-                                    </form>
+                                       <div class="form-group col-sm-6">
+                                             <label for="phone">Hand Phone</label>
+                                             <input type="text" class="form-control" id="phone" name="phone" required value="<?php echo $user->phone; ?>">
+                                       </div>
+                                       <div class="form-group col-sm-6">
+                                             <label for="role">Role</label>
+                                             <select class="form-control" id="role" name="role" required>
+                                                <option selected="" disabled="">Select Role</option>
+                                                <option value="adminstrator" <?= ($user->role == 'administrator') ? 'selected' : ''; ?>>Administrator</option>
+                                                <option value="checker" <?= ($user->role == 'checker') ? 'selected' : ''; ?>>Checker</option>
+                                                <option value="operator" <?= ($user->role == 'operator') ? 'selected' : ''; ?>>Operator</option>
+                                             </select>
+                                       </div>
+                                       <div class="form-group col-sm-12">
+                                             <label>Address:</label>
+                                             <textarea class="form-control" name="address" rows="5" style="line-height: 22px;"><?php echo $user->address; ?></textarea>
+                                       </div>
+                                    </div>
+                                    <input type="hidden" name="func" value="editUser">
+                                    <button type="submit" class="btn btn-primary mr-2">Submit</button>
+                                    <button type="reset" class="btn iq-bg-danger">Cancel</button>
+                                 </form>
                                  </div>
                               </div>
                            </div>
@@ -119,20 +148,21 @@
                                     </div>
                                  </div>
                                  <div class="iq-card-body">
-                                    <form>
+                                    <form action="ajax-user.php" method="POST">
                                        <div class="form-group">
                                           <label for="cpass">Current Password:</label>
                                           <a href="javascripe:void();" class="float-right">Reset Password</a>
-                                             <input type="Password" class="form-control" id="cpass" value="">
+                                             <input type="Password" class="form-control" id="cpass" name="cpass" value="">
                                           </div>
                                        <div class="form-group">
                                           <label for="npass">New Password:</label>
-                                          <input type="Password" class="form-control" id="npass" value="">
+                                          <input type="Password" class="form-control" id="npass" name="npass" value="">
                                        </div>
                                        <div class="form-group">
                                           <label for="vpass">Verify Password:</label>
-                                             <input type="Password" class="form-control" id="vpass" value="">
+                                             <input type="Password" class="form-control" id="vpass" name="vpass" value="">
                                        </div>
+                                       <input type="hidden" name="func" value="changePassword">
                                        <button type="submit" class="btn btn-primary mr-2">Submit</button>
                                        <button type="reset" class="btn iq-bg-danger">Cancel</button>
                                     </form>

@@ -1,6 +1,6 @@
 <div class="iq-sidebar">
             <div class="iq-sidebar-logo d-flex justify-content-between">
-               <a href="index.html">
+               <a href="index.php">
                <img src="images/logo.png" class="img-fluid" alt="">
                <span>OCR App</span>
                </a>
@@ -17,14 +17,22 @@
                   <ul id="iq-sidebar-toggle" class="iq-menu">
                      <li class="iq-menu-title"><i class="ri-separator"></i><span>Main</span></li>
                      <li class="<?php echo (strpos($_SERVER['PHP_SELF'], 'index.php') !== false ? 'active' : ''); ?>"><a href="index.php" class="iq-waves-effect"><i class="ri-home-4-line"></i><span>Dashboard</span></a></li>
-                     <li class="<?php echo (strpos($_SERVER['PHP_SELF'], 'user') !== false ? 'active' : ''); ?>">
-                        <a href="#user-info" class="iq-waves-effect collapsed"  data-toggle="collapse" aria-expanded="false"><i class="ri-user-line"></i><span>User</span><i class="ri-arrow-right-s-line iq-arrow-right"></i></a>
-                        <ul id="user-info" class="iq-submenu collapse" data-parent="#iq-sidebar-toggle">
-                           <li class="<?php echo (strpos($_SERVER['PHP_SELF'], 'user-list.php') !== false ? 'active' : ''); ?>"><a href="user-list.php">User List</a></li>
-                           <li class="<?php echo (strpos($_SERVER['PHP_SELF'], 'user-edit.php') !== false ? 'active' : ''); ?>"><a href="user-edit.php">User Edit</a></li>
-                           <li class="<?php echo (strpos($_SERVER['PHP_SELF'], 'user-add.php') !== false ? 'active' : ''); ?>"><a href="user-add.php">User Add</a></li>
-                        </ul>
-                     </li>
+                     <?php
+                        if (isset($_SESSION['role']) && $_SESSION['role'] == 'administrator') {
+                        ?>
+                           <li class="<?php echo (strpos($_SERVER['PHP_SELF'], 'user') !== false ? 'active' : ''); ?>">
+                              <a href="#user-info" class="iq-waves-effect collapsed"  data-toggle="collapse" aria-expanded="false"><i class="ri-user-line"></i><span>User</span><i class="ri-arrow-right-s-line iq-arrow-right"></i></a>
+                              <ul id="user-info" class="iq-submenu collapse" data-parent="#iq-sidebar-toggle">
+                                 <li class="<?php echo (strpos($_SERVER['PHP_SELF'], 'user-list.php') !== false ? 'active' : ''); ?>"><a href="user-list.php">User List</a></li>
+                                 <!-- <li class="<?php echo (strpos($_SERVER['PHP_SELF'], 'user-edit.php') !== false ? 'active' : ''); ?>"><a href="user-edit.php">User Edit</a></li> -->
+                                 <li class="<?php echo (strpos($_SERVER['PHP_SELF'], 'user-add.php') !== false ? 'active' : ''); ?>"><a href="user-add.php">User Add</a></li>
+                              </ul>
+                           </li>
+                        <?php
+                        }
+                     ?>
+                     <li class="<?php echo (strpos($_SERVER['PHP_SELF'], 'data-upload.php') !== false ? 'active' : ''); ?>"><a href="data-upload.php" class="iq-waves-effect"><i class="ri-profile-line"></i><span>Data Input</span></a></li>
+<!-- 
                      <li class="iq-menu-title"><i class="ri-separator"></i><span>Components</span></li>                    
                      <li>
                         <a href="#ui-elements" class="iq-waves-effect collapsed"  data-toggle="collapse" aria-expanded="false"><i class="ri-pencil-ruler-line"></i><span>UI Elements</span><i class="ri-arrow-right-s-line iq-arrow-right"></i></a>
@@ -96,7 +104,7 @@
                            <li><a href="#"><i class="ri-record-circle-line"></i>Menu 1</a></li>
                             
                         </ul>
-                     </li>
+                     </li> -->
                   </ul>
                </nav>
                <div class="p-3"></div>

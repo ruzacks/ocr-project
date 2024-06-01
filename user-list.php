@@ -1,10 +1,12 @@
+<?php include('page-protection.php') ?>
+
 <!doctype html>
 <html lang="en">
    <head>
       <!-- Required meta tags -->
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-      <title>Sofbox - Responsive Bootstrap 4 Admin Dashboard Template</title>
+      <title>OCR - User List</title>
       <!-- Favicon -->
       <link rel="shortcut icon" href="images/favicon.ico" />
       <!-- Bootstrap CSS -->
@@ -55,207 +57,39 @@
                      </div>
                      <div class="iq-card-body">
                         <div class="table-responsive">
-                           <div class="row justify-content-between">
-                              <div class="col-sm-12 col-md-6">
-                                 <div id="user_list_datatable_info" class="dataTables_filter">
-                                    <form class="mr-3 position-relative">
-                                       <div class="form-group mb-0">
-                                          <input type="search" class="form-control" id="exampleInputSearch" placeholder="Search" aria-controls="user-list-table">
-                                       </div>
-                                    </form>
-                                 </div>
-                              </div>
-                              <div class="col-sm-12 col-md-6">
-                                 <div class="user-list-files d-flex float-right">
-                                    <a href="javascript:void();" class="chat-icon-phone">
-                                       Print
-                                     </a>
-                                    <a href="javascript:void();" class="chat-icon-video">
-                                       Excel
-                                     </a>
-                                     <a href="javascript:void();" class="chat-icon-delete">
-                                       Pdf
-                                     </a>
-                                   </div>
-                              </div>
-                           </div>
                            <table id="user-list-table" class="table table-striped table-bordered mt-4" role="grid" aria-describedby="user-list-page-info">
                              <thead>
                                  <tr>
-                                    <th>Profile</th>
-                                    <th>Name</th>
-                                    <th>Contact</th>
-                                    <th>Email</th>
-                                    <th>Country</th>
+                                    <th>Username</th>
+                                    <th>Phone</th>
+                                    <th>Address</th>
+                                    <th>Role</th>
                                     <th>Status</th>
-                                    <th>Company</th>
-                                    <th>Join Date</th>
                                     <th>Action</th>
                                  </tr>
                              </thead>
                              <tbody>
-                                 <tr>
-                                    <td class="text-center"><img class="rounded-circle img-fluid avatar-40" src="images/user/01.jpg" alt="profile"></td>
+                                 <!-- <tr>
                                     <td>Anna Sthesia</td>
                                     <td>(760) 756 7568</td>
-                                    <td>annasthesia@gmail.com</td>
-                                    <td>USA</td>
+                                    <td>Bandung</td>
                                     <td><span class="badge iq-bg-primary">Active</span></td>
-                                    <td>Acme Corporation</td>
-                                    <td>2019/12/01</td>
                                     <td>
                                        <div class="flex align-items-center list-user-action">
-                                          <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Add" href="#"><i class="ri-user-add-line"></i></a>
                                           <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" href="#"><i class="ri-pencil-line"></i></a>
                                           <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" href="#"><i class="ri-delete-bin-line"></i></a>
                                        </div>
                                     </td>
-                                 </tr> 
-                                 <tr>
-                                    <td class="text-center"><img class="rounded-circle img-fluid avatar-40" src="images/user/02.jpg" alt="profile"></td>
-                                    <td>Brock Lee</td>
-                                    <td>+62 5689 458 658</td>
-                                    <td>brocklee@gmail.com</td>
-                                    <td>Indonesia</td>
-                                    <td><span class="badge iq-bg-primary">Active</span></td>
-                                    <td>Soylent Corp</td>
-                                    <td>2019/12/01</td>
-                                    <td>
-                                       <div class="flex align-items-center list-user-action">
-                                          <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Add" href="#"><i class="ri-user-add-line"></i></a>
-                                          <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" href="#"><i class="ri-pencil-line"></i></a>
-                                          <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" href="#"><i class="ri-delete-bin-line"></i></a>
-                                       </div>
-                                    </td>
-                                 </tr> 
-                                 <tr>
-                                    <td class="text-center"><img class="rounded-circle img-fluid avatar-40" src="images/user/03.jpg" alt="profile"></td>
-                                    <td>Dan Druff</td>
-                                    <td>+55 6523 456 856</td>
-                                    <td>dandruff@gmail.com</td>
-                                    <td>Brazil</td>
-                                    <td><span class="badge iq-bg-warning">Pending</span></td>
-                                    <td>Umbrella Corporation</td>
-                                    <td>2019/12/01</td>
-                                    <td>
-                                       <div class="flex align-items-center list-user-action">
-                                          <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Add" href="#"><i class="ri-user-add-line"></i></a>
-                                          <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" href="#"><i class="ri-pencil-line"></i></a>
-                                          <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" href="#"><i class="ri-delete-bin-line"></i></a>
-                                       </div>
-                                    </td>
-                                 </tr>
-                                 <tr>
-                                    <td class="text-center"><img class="rounded-circle img-fluid avatar-40" src="images/user/04.jpg" alt="profile"></td>
-                                    <td>Hans Olo</td>
-                                    <td>+91 2586 253 125</td>
-                                    <td>hansolo@gmail.com</td>
-                                    <td>India</td>
-                                    <td><span class="badge iq-bg-danger">Inactive</span></td>
-                                    <td>Vehement Capital</td>
-                                    <td>2019/12/01</td>
-                                    <td>
-                                       <div class="flex align-items-center list-user-action">
-                                          <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Add" href="#"><i class="ri-user-add-line"></i></a>
-                                          <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" href="#"><i class="ri-pencil-line"></i></a>
-                                          <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" href="#"><i class="ri-delete-bin-line"></i></a>
-                                       </div>
-                                    </td>
-                                 </tr> 
-                                 <tr>
-                                    <td class="text-center"><img class="rounded-circle img-fluid avatar-40" src="images/user/05.jpg" alt="profile"></td>
-                                    <td>Lynn Guini</td>
-                                    <td>+27 2563 456 589</td>
-                                    <td>lynnguini@gmail.com</td>
-                                    <td>Africa</td>
-                                    <td><span class="badge iq-bg-primary">Active</span></td>
-                                    <td>Massive Dynamic</td>
-                                    <td>2019/12/01</td>
-                                    <td>
-                                       <div class="flex align-items-center list-user-action">
-                                          <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Add" href="#"><i class="ri-user-add-line"></i></a>
-                                          <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" href="#"><i class="ri-pencil-line"></i></a>
-                                          <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" href="#"><i class="ri-delete-bin-line"></i></a>
-                                       </div>
-                                    </td>
-                                 </tr> 
-                                 <tr>
-                                    <td class="text-center"><img class="rounded-circle img-fluid avatar-40" src="images/user/06.jpg" alt="profile"></td>
-                                    <td>Eric Shun</td>
-                                    <td>+55 25685 256 589</td>
-                                    <td>ericshun@gmail.com</td>
-                                    <td>Brazil</td>
-                                    <td><span class="badge iq-bg-warning">Pending</span></td>
-                                    <td>Globex Corporation</td>
-                                    <td>2019/12/01</td>
-                                    <td>
-                                       <div class="flex align-items-center list-user-action">
-                                          <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Add" href="#"><i class="ri-user-add-line"></i></a>
-                                          <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" href="#"><i class="ri-pencil-line"></i></a>
-                                          <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" href="#"><i class="ri-delete-bin-line"></i></a>
-                                       </div>
-                                    </td>
-                                 </tr>
-                                 <tr>
-                                    <td class="text-center"><img class="rounded-circle img-fluid avatar-40" src="images/user/07.jpg" alt="profile"></td>
-                                    <td>aaronottix</td>
-                                    <td>(760) 765 2658</td>
-                                    <td>budwiser@ymail.com</td>
-                                    <td>USA</td>
-                                    <td><span class="badge iq-bg-info">Hold</span></td>
-                                    <td>Acme Corporation</td>
-                                    <td>2019/12/01</td>
-                                    <td>
-                                       <div class="flex align-items-center list-user-action">
-                                          <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Add" href="#"><i class="ri-user-add-line"></i></a>
-                                          <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" href="#"><i class="ri-pencil-line"></i></a>
-                                          <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" href="#"><i class="ri-delete-bin-line"></i></a>
-                                       </div>
-                                    </td>
-                                 </tr> 
-                                 <tr>
-                                    <td class="text-center"><img class="rounded-circle img-fluid avatar-40" src="images/user/08.jpg" alt="profile"></td>
-                                    <td>Marge Arita</td>
-                                    <td>+27 5625 456 589</td>
-                                    <td>margearita@gmail.com</td>
-                                    <td>Africa</td>
-                                    <td><span class="badge iq-bg-success">Complite</span></td>
-                                    <td>Vehement Capital</td>
-                                    <td>2019/12/01</td>
-                                    <td>
-                                       <div class="flex align-items-center list-user-action">
-                                          <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Add" href="#"><i class="ri-user-add-line"></i></a>
-                                          <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" href="#"><i class="ri-pencil-line"></i></a>
-                                          <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" href="#"><i class="ri-delete-bin-line"></i></a>
-                                       </div>
-                                    </td>
-                                 </tr> 
-                                 <tr>
-                                    <td class="text-center"><img class="rounded-circle img-fluid avatar-40" src="images/user/09.jpg" alt="profile"></td>
-                                    <td>Bill Dabear</td>
-                                    <td>+55 2563 456 589</td>
-                                    <td>billdabear@gmail.com</td>
-                                    <td>Brazil</td>
-                                    <td><span class="badge iq-bg-primary">active</span></td>
-                                    <td>Massive Dynamic</td>
-                                    <td>2019/12/01</td>
-                                    <td>
-                                       <div class="flex align-items-center list-user-action">
-                                          <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Add" href="#"><i class="ri-user-add-line"></i></a>
-                                          <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" href="#"><i class="ri-pencil-line"></i></a>
-                                          <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" href="#"><i class="ri-delete-bin-line"></i></a>
-                                       </div>
-                                    </td>
-                                 </tr>                               
+                                 </tr>  -->
                              </tbody>
                            </table>
                         </div>
                            <div class="row justify-content-between mt-3">
                               <div id="user-list-page-info" class="col-md-6">
-                                 <span>Showing 1 to 5 of 5 entries</span>
+                                 <!-- <span>Showing 1 to 5 of 5 entries</span> -->
                               </div>
                               <div class="col-md-6">
-                                 <nav aria-label="Page navigation example">
+                                 <!-- <nav aria-label="Page navigation example">
                                     <ul class="pagination justify-content-end mb-0">
                                        <li class="page-item disabled">
                                           <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
@@ -267,7 +101,7 @@
                                           <a class="page-link" href="#">Next</a>
                                        </li>
                                     </ul>
-                                 </nav>
+                                 </nav> -->
                               </div>
                            </div>
                      </div>
@@ -327,5 +161,119 @@
       <script src="js/chart-custom.js"></script>
       <!-- Custom JavaScript -->
       <script src="js/custom.js"></script>
+
+      <script>
+         getAllUser();
+
+         function getAllUser() {
+            $.ajax({
+               url: "ajax-user.php",
+               type: "GET",
+               data: { func: 'getAllUser' },
+               success: function(response) {
+                     // Clear existing table rows
+                     $('#user-list-table tbody').empty();
+                     
+                     // Loop through each user data and create a row
+                     response.forEach(function(user) {
+                        var row = createUserRow(user);
+                        $('#user-list-table tbody').append(row);
+                     });
+               },
+               error: function(xhr, status, error) {
+                     console.error("Error: " + error);
+               }
+            });
+         }
+
+         function createUserRow(userData) {
+            var row = document.createElement('tr');
+            
+            var usernameCell = document.createElement('td');
+            usernameCell.textContent = userData.username;
+            row.appendChild(usernameCell);
+            
+            var phoneCell = document.createElement('td');
+            phoneCell.textContent = userData.phone;
+            row.appendChild(phoneCell);
+            
+            var addressCell = document.createElement('td');
+            addressCell.textContent = userData.address;
+            row.appendChild(addressCell);
+
+            var roleCell = document.createElement('td');
+            roleCell.textContent = userData.role;
+            row.appendChild(roleCell);
+            
+            var statusCell = document.createElement('td');
+            var statusDiv = document.createElement('div');
+            statusDiv.className = 'custom-control custom-switch custom-control-inline';
+
+            var statusInput = document.createElement('input');
+            statusInput.type = 'checkbox';
+            statusInput.className = 'custom-control-input';
+            statusInput.id = 'customSwitch' + userData.username; // Assuming userData.id is unique for each user
+            statusInput.checked = userData.status === 'active';
+
+            var statusLabel = document.createElement('label');
+            statusLabel.className = 'custom-control-label';
+            statusLabel.setAttribute('for', statusInput.id);
+            statusLabel.textContent = userData.status === 'active' ? 'Active' : 'Inactive';
+            statusInput.onchange = function() {
+               handleStatusChange(userData.username, this.checked, statusLabel);
+            };
+
+            statusDiv.appendChild(statusInput);
+            statusDiv.appendChild(statusLabel);
+            statusCell.appendChild(statusDiv);
+            row.appendChild(statusCell);
+            
+            var actionCell = document.createElement('td');
+            var actionDiv = document.createElement('div');
+            actionDiv.className = 'flex align-items-center list-user-action';
+            var editLink = document.createElement('a');
+            editLink.setAttribute('href', 'user-edit.php?username=' + userData.username);
+            editLink.setAttribute('data-toggle', 'tooltip');
+            editLink.setAttribute('data-placement', 'top');
+            editLink.setAttribute('title', 'Edit');
+            editLink.innerHTML = '<i class="ri-pencil-line"></i>';
+            var deleteLink = document.createElement('a');
+            deleteLink.setAttribute('href', '#');
+            deleteLink.setAttribute('data-toggle', 'tooltip');
+            deleteLink.setAttribute('data-placement', 'top');
+            deleteLink.setAttribute('title', 'Delete');
+            deleteLink.innerHTML = '<i class="ri-delete-bin-line"></i>';
+            actionDiv.appendChild(editLink);
+            actionDiv.appendChild(deleteLink);
+            actionCell.appendChild(actionDiv);
+            row.appendChild(actionCell);
+            
+            return row;
+         }
+
+         function handleStatusChange(username, isChecked, statusLabel) {
+         var newStatus = isChecked ? 'active' : 'inactive';
+
+         $.ajax({
+            type: 'POST',
+            url: 'ajax-user.php',
+            data: { func:'changeUserStatus', username: username, status: newStatus },
+            success: function(response) {
+                  var result = JSON.parse(response);
+                  if (result.status === 'success') {
+                     statusLabel.textContent = newStatus === 'active' ? 'Active' : 'Inactive';
+                  } else {
+                     alert('Failed to update status');
+                     $(`#customSwitch${username}`).prop('checked', !isChecked); // Revert the checkbox state
+                  }
+            },
+            error: function() {
+                  alert('Failed to update status');
+                  $(`#customSwitch${username}`).prop('checked', !isChecked); // Revert the checkbox state
+            }
+         });
+      }
+
+      </script>
 </body>
 </html>

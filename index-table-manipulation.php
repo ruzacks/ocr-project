@@ -105,7 +105,7 @@
         tr.appendChild(tdKecamatan);
 
         const tdUploadDate = document.createElement('td');
-        tdUploadDate.textContent = formatDate(data.reg_date);
+        tdUploadDate.textContent = formatDate(data.upload_date);
         tr.appendChild(tdUploadDate);
 
         const tdStatus = document.createElement('td');
@@ -319,6 +319,30 @@
     function reloadPageState(){
         const activePage = getActivePageNumber();
         displayPage(activePage);
+    }
+
+    function reloadNumberofPage(){
+        itemsPerPage = parseInt($('#itemPerPageInput').val());
+
+        if(itemsPerPage == 0 || itemsPerPage == null){
+            itemsPerPage = 10;
+        }
+
+        let nik = $('#filter-nik').val().toLowerCase();
+        let nama = $('#filter-nama').val().toLowerCase();
+        let kelurahan = $('#filter-kelurahan').val().toLowerCase();
+        let kecamatan = $('#filter-kecamatan').val().toLowerCase();
+        let uploadDate = $('#filter-upload-date').val().toLowerCase();
+        let status = $('#filter-status').val().toLowerCase();
+
+    if (nik || nama || kelurahan || kecamatan || uploadDate || status) {
+        getFilteredData();
+        displayPage(1);
+    } else {
+        getAllData();
+        displayPage(1);
+    }
+
     }
 
 

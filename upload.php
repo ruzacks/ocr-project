@@ -2,14 +2,16 @@
 include ('connection.php');
 require ('tcpdf/tcpdf.php'); // Include the TCPDF library
 
+session_start();
+
 $conn =  getConn();
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$stmt = $conn->prepare("INSERT INTO ektps (phone, nik, nama, birth_place, birth_date, gender, address, address_rt, address_rw, address_kel_des, address_kec, religion, married_status, job, national) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-$stmt->bind_param("sssssssssssssss", $phone, $nik, $nama, $birth_place, $birth_date, $gender, $address, $address_rt, $address_rw, $address_kel_des, $address_kec, $religion, $married_status, $job, $national);
+$stmt = $conn->prepare("INSERT INTO ektps (phone, nik, nama, birth_place, birth_date, gender, address, address_rt, address_rw, address_kel_des, address_kec, religion, married_status, job, national, upload_by, upload_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
+$stmt->bind_param("ssssssssssssssss", $phone, $nik, $nama, $birth_place, $birth_date, $gender, $address, $address_rt, $address_rw, $address_kel_des, $address_kec, $religion, $married_status, $job, $national, $username);
 
 $phone = $_POST['phone'];
 $nik = $_POST['nik'];
@@ -26,6 +28,8 @@ $religion = $_POST['religion'];
 $married_status = $_POST['married_status'];
 $job = $_POST['job'];
 $national = $_POST['national'];
+$username = $_SESSION['username'];
+
 
 $response = array(); // Initialize response array
 

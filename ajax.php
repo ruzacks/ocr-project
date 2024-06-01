@@ -2,6 +2,8 @@
 
 include('connection.php');
 
+session_start();
+
 require 'vendor/autoload.php';
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -28,6 +30,8 @@ if (isset($_GET['func']) || isset($_POST['func'])) {
         changeStatus();
     } else if ($functionName === 'deleteNik') {
         deleteNik();
+    } else if ($functionName === 'getCountData') {
+        getCountData();
     } else {
         // Handle the case where the function name is not recognized
         header('Content-Type: application/json');
@@ -42,7 +46,11 @@ if (isset($_GET['func']) || isset($_POST['func'])) {
 
 function getAllData() {
     $conn = getConn();
-    $query = "SELECT nik, nama, address_kel_des, address_kec, reg_date,status FROM ektps";
+    $query = "SELECT nik, nama, address_kel_des, address_kec, upload_date,status FROM ektps";
+
+    // Add the limit of 1000 records
+    $query .= " LIMIT 1000";
+
     $result = mysqli_query($conn, $query);
 
     if ($result) {
@@ -60,7 +68,7 @@ function getAllData() {
 
 function getFilteredData(){
     $conn = getConn();
-    $query = "SELECT nik, nama, address_kel_des, address_kec, reg_date,status FROM ektps";
+    $query = "SELECT nik, nama, address_kel_des, address_kec, upload_date,status FROM ektps";
 
     $whereClauses = [];
 
@@ -88,7 +96,7 @@ function getFilteredData(){
     if (!empty($_GET['uploadDate'])) {
         $uploadDate = $_GET['uploadDate'];
         // Assuming $uploadDate is in the format YYYY-MM-DD
-        $whereClauses[] = "DATE(reg_date) = '$uploadDate'";
+        $whereClauses[] = "DATE(upload_date) = '$uploadDate'";
     }
     
     if (!empty($_GET['status'])) {
@@ -150,7 +158,7 @@ function downloadExcelAndData() {
             $sheet->setCellValue('B' . $row, $row_data['nama']); // Adjust according to your database schema
             $sheet->setCellValue('C' . $row, $row_data['address_kel_des']); // Adjust according to your database schema
             $sheet->setCellValue('D' . $row, $row_data['address_kec']); // Adjust according to your database schema
-            $sheet->setCellValue('E' . $row, $row_data['reg_date']); // Adjust according to your database schema
+            $sheet->setCellValue('E' . $row, $row_data['upload_date']); // Adjust according to your database schema
             $sheet->setCellValue('F' . $row, $row_data['status']); // Adjust according to your database schema
             $row++;
         }
@@ -305,5 +313,39 @@ function deleteNik(){
 
     echo json_encode($response);
 }
+
+function getCountData() {
+    $conn = getConn();
+    $username = $_SESSION['username'];
+    $isChecker = $_SESSION['role'] == 'checker';
+
+    // Uploaded count query
+    if ($isChecker) {
+        $sqlUploaded = "SELECT COUNT(*) as count FROM ektps WHERE upload_by = '$username'";
+    } else {
+        $sqlUploaded = "SELECT COUNT(*) as count FROM ektps";
+    }
+
+    $resultUploaded = $conn->query($sqlUploaded);
+    $countUploaded = mysqli_fetch_assoc($resultUploaded)['count'];
+
+    // Downloaded count query
+    if ($isChecker) {
+        $sqlDownloaded = "SELECT COUNT(*) as count FROM ektps WHERE status = 'downloaded' AND upload_by = '$username'";
+    } else {
+        $sqlDownloaded = "SELECT COUNT(*) as count FROM ektps WHERE status = 'downloaded'";
+    }
+
+    $resultDownloaded = $conn->query($sqlDownloaded);
+    $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
+
+    // Return counts in JSON
+    echo json_encode([
+        'countUploaded' => $countUploaded,
+        'countDownloaded' => $countDownloaded
+    ]);
+}
+
+
 
 ?>

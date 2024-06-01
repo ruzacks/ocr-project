@@ -1,3 +1,4 @@
+
 <div class="iq-top-navbar">
             <div class="iq-navbar-custom">
                <div class="iq-sidebar-logo">
@@ -37,10 +38,10 @@
                            <div class="iq-card iq-card-block iq-card-stretch iq-card-height shadow-none m-0">
                               <div class="iq-card-body p-0 ">
                                  <div class="bg-primary p-3">
-                                    <h5 class="mb-0 text-white line-height">Hello Nik jone</h5>
-                                    <span class="text-white font-size-12">Available</span>
+                                    <h5 class="mb-0 text-white line-height">Hello <?php echo $_SESSION['username']?></h5>
+                                    <span class="text-white font-size-12"></span>
                                  </div>
-                                 <a href="profile.html" class="iq-sub-card iq-bg-primary-hover">
+                                 <a href="user-edit.php?username=<?php echo $_SESSION['username']?>" class="iq-sub-card iq-bg-primary-hover">
                                     <div class="media align-items-center">
                                        <div class="rounded iq-card-icon iq-bg-primary">
                                           <i class="ri-file-user-line"></i>
@@ -51,41 +52,8 @@
                                        </div>
                                     </div>
                                  </a>
-                                 <a href="profile-edit.html" class="iq-sub-card iq-bg-primary-success-hover">
-                                    <div class="media align-items-center">
-                                       <div class="rounded iq-card-icon iq-bg-success">
-                                          <i class="ri-profile-line"></i>
-                                       </div>
-                                       <div class="media-body ml-3">
-                                          <h6 class="mb-0 ">Edit Profile</h6>
-                                          <p class="mb-0 font-size-12">Modify your personal details.</p>
-                                       </div>
-                                    </div>
-                                 </a>
-                                 <a href="account-setting.html" class="iq-sub-card iq-bg-primary-danger-hover">
-                                    <div class="media align-items-center">
-                                       <div class="rounded iq-card-icon iq-bg-danger">
-                                          <i class="ri-account-box-line"></i>
-                                       </div>
-                                       <div class="media-body ml-3">
-                                          <h6 class="mb-0 ">Account settings</h6>
-                                          <p class="mb-0 font-size-12">Manage your account parameters.</p>
-                                       </div>
-                                    </div>
-                                 </a>
-                                 <a href="privacy-setting.html" class="iq-sub-card iq-bg-primary-secondary-hover">
-                                    <div class="media align-items-center">
-                                       <div class="rounded iq-card-icon iq-bg-secondary">
-                                          <i class="ri-lock-line"></i>
-                                       </div>
-                                       <div class="media-body ml-3">
-                                          <h6 class="mb-0 ">Privacy Settings</h6>
-                                          <p class="mb-0 font-size-12">Control your privacy parameters.</p>
-                                       </div>
-                                    </div>
-                                 </a>
                                  <div class="d-inline-block w-100 text-center p-3">
-                                    <a class="iq-bg-danger iq-sign-btn" href="sign-in.html" role="button">Sign out<i class="ri-login-box-line ml-2"></i></a>
+                                    <a class="iq-bg-danger iq-sign-btn" href="logout.php" role="button">Sign out<i class="ri-login-box-line ml-2"></i></a>
                                  </div>
                               </div>
                            </div>

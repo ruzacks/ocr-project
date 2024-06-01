@@ -43,7 +43,7 @@
                         <div class="sign-in-from">
                             <h1 class="mb-0">Login</h1>
                             <p>Enter your username and password to login.</p>
-                            <form class="mt-4">
+                            <form class="mt-4" id="loginForm">
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Username</label>
                                     <input type="text" class="form-control mb-0" id="username" placeholder="Username">
@@ -124,5 +124,55 @@
       <script src="js/chart-custom.js"></script>
       <!-- Custom JavaScript -->
       <script src="js/custom.js"></script>
+
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+      <script>
+        $('#loginForm').submit(function(event) {
+        event.preventDefault(); // Prevent form from submitting the traditional way
+
+        var username = $('#username').val();
+        var password = $('#password').val();
+
+        $.ajax({
+            url: 'auth.php', // Replace with your actual login URL
+            type: 'POST',
+            data: {
+                func: 'login', 
+                username: username,
+                password: password
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Login successful!',
+                        text: 'Redirecting...',
+                        showConfirmButton: false,
+                        timer: 1000,
+                        timerProgressBar: true
+                    }).then(function() {
+                        window.location.href = 'index.php'; // Replace with your actual dashboard URL
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Login failed!',
+                        text: response.message
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'An error occurred!',
+                    text: 'Failed to communicate with the server.'
+                });
+            }
+        });
+    });
+      </script>
    </body>
 </html>

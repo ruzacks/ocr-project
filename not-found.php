@@ -46,55 +46,12 @@
       <!-- TOP Nav Bar END -->
       <!-- Page Content  -->
    <div id="content-page" class="content-page">
-      <div class="container-fluid">
-         <div class="row">
-            <div class="col-lg-12">
-                  <div class="iq-card">
-                     <div class="iq-card-header d-flex justify-content-between">
-                        <div class="iq-header-title">
-                           <h4 class="card-title">New User Information</h4>
-                        </div>
-                     </div>
-                     <div class="iq-card-body">
-                     <?php $error = isset($_GET['error']) ? $_GET['error'] : ''; ?>
-                     <div class="alert alert-danger" role="alert" <?php echo empty($error) ? 'hidden' : ''; ?>>
-                        <div class="iq-alert-text"><?php echo $error; ?></div>
-                     </div>
-                        <div class="new-user-info">
-                        <form action="ajax-user.php" method="POST">
-                           <div class="row align-items-center">
-                              <div class="form-group col-sm-6">
-                                    <label for="username">Username</label>
-                                    <input type="text" class="form-control" id="username" name="username" required value="<?php echo isset($_POST['username']) ? htmlspecialchars($_POST['username']) : ''; ?>">
-                              </div>
-                              <div class="form-group col-sm-6">
-                                    <label for="phone">Hand Phone</label>
-                                    <input type="text" class="form-control" id="phone" name="phone" required value="<?php echo isset($_POST['phone']) ? htmlspecialchars($_POST['phone']) : ''; ?>">
-                              </div>
-                              <div class="form-group col-sm-6">
-                                    <label for="role">Role</label>
-                                    <select class="form-control" id="role" name="role" required>
-                                       <option selected="" disabled="">Select Role</option>
-                                       <option value="adminstrator" <?php echo (isset($_POST['role']) && $_POST['role'] == 'adminstrator') ? 'selected' : ''; ?>>Administrator</option>
-                                       <option value="checker" <?php echo (isset($_POST['role']) && $_POST['role'] == 'checker') ? 'selected' : ''; ?>>Checker</option>
-                                       <option value="operator" <?php echo (isset($_POST['role']) && $_POST['role'] == 'operator') ? 'selected' : ''; ?>>Operator</option>
-                                    </select>
-                              </div>
-                              <div class="form-group col-sm-12">
-                                    <label>Address:</label>
-                                    <textarea class="form-control" name="address" rows="5" style="line-height: 22px;"><?php echo isset($_POST['address']) ? htmlspecialchars($_POST['address']) : ''; ?></textarea>
-                              </div>
-                           </div>
-                           <input type="hidden" name="func" value="addUser">
-                           <button type="submit" class="btn btn-primary mr-2">Submit</button>
-                           <button type="reset" class="btn iq-bg-danger">Cancel</button>
-                        </form>
-                        </div>
-                     </div>
-                  </div>
-            </div>
-         </div>
-      </div>
+    <center>
+
+        <h1>404</h1>
+        <h2>The page is not found</h2>
+        
+    </center>
    </div>
    </div>
    <!-- Wrapper END -->

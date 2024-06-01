@@ -1,3 +1,33 @@
+<?php include('page-protection.php') ?>
+<?php include('connection.php') ?>
+
+<?php 
+$conn = getConn();
+$username = $_SESSION['username'];
+$isChecker = $_SESSION['role'] == 'checker';
+
+// Uploaded count query
+if ($isChecker) {
+    $sqlUploaded = "SELECT COUNT(*) as count FROM ektps WHERE upload_by = '$username'";
+} else {
+    $sqlUploaded = "SELECT COUNT(*) as count FROM ektps";
+}
+
+$resultUploaded = $conn->query($sqlUploaded);
+$countUploaded = mysqli_fetch_assoc($resultUploaded)['count'];
+
+// Downloaded count query
+if ($isChecker) {
+    $sqlDownloaded = "SELECT COUNT(*) as count FROM ektps WHERE status = 'downloaded' AND upload_by = '$username'";
+} else {
+    $sqlDownloaded = "SELECT COUNT(*) as count FROM ektps WHERE status = 'downloaded'";
+}
+
+$resultDownloaded = $conn->query($sqlDownloaded);
+$countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
+
+?>
+
 <!doctype html>
 <html lang="en">
    <head>
@@ -90,7 +120,7 @@
                            <span class="float-right line-height-6">Uploaded</span>
                            <div class="clearfix"></div>
                            <div class="text-center">
-                              <h2 class="mb-0"><span class="counter">65</span><span>M</span></h2>
+                              <h2 class="mb-0"><span class="counter" id="uploadCounter"><?php echo $countUploaded ?></span><span></span></h2>
                            </div>
                         </div>
                         <div id="chart-1"></div>
@@ -100,10 +130,10 @@
                      <div class="iq-card iq-card-block iq-card-stretch iq-card-height overflow-hidden">
                         <div class="iq-card-body pb-0">
                            <div class="rounded-circle iq-card-icon iq-bg-warning"><i class="ri-bar-chart-grouped-line"></i></div>
-                           <span class="float-right line-height-6">Downloaded</span>
+                           <span class="float-right line-height-6" >Downloaded</span>
                            <div class="clearfix"></div>
                            <div class="text-center">
-                              <h2 class="mb-0"><span class="counter">45</span><span>M</span></h2>
+                              <h2 class="mb-0"><span class="counter" id="downloadCounter"><?php echo $countDownloaded ?></span><span></span></h2>
                            </div>
                         </div>
                         <div id="chart-2"></div>
@@ -112,13 +142,14 @@
                </div>
                <div class="row">
                   <div class="col-lg-12">
-                     <div class="iq-card">
+                     <div class="iq-card" <?php echo $_SESSION['role'] == 'checker' ? 'hidden' : '' ?>>
                         <div class="iq-card-header d-flex justify-content-between">
                            <div class="iq-header-title">
                               <h4 class="card-title">Upload Summary</h4>
                            </div>
                            <div class="iq-card-header-toolbar d-flex align-items-center">
-                           <a onclick="downloadSelection()" style="cursor: pointer;"><i class="ri-file-download-fill mr-2"></i>Download</a>
+                           <input type="number" class="form-control" id="itemPerPageInput" onchange="reloadNumberofPage()" placeholder="10" style="width: 100px;">
+                           <a onclick="downloadSelection()" style="cursor: pointer;"><i class="ri-file-download-fill mr-2"></i>Download Selected</a>
                            </div>
                         </div>
                         <div class="iq-card-body">
@@ -141,7 +172,7 @@
                                        </select>
                                        <th>
                                           <button type="button" id="filter-button" onclick="getFilteredData()" class="btn btn-primary mb-3">Filter</button>
-                                          <button type="button" id="reset-button" class="btn btn-secondary mb-3">Reset</button>
+                                          <button type="button" id="reset-button" onclick="resetAllFilter()" class="btn btn-secondary mb-3">Reset</button>
                                        </th> <!-- No filter for the action column -->
                                     </tr>
                                     <tr>
@@ -242,9 +273,10 @@
       <script>
 
          getAllData();
+         // getCountData();
 
          let currentPage = 1;
-         const itemsPerPage = 10;
+         let itemsPerPage = 10;
          let dataCache = [];
 
          function getAllData() {
@@ -262,6 +294,24 @@
                     console.error("Error: " + error);
                 }
             });
+         }
+
+         function getCountData(){
+
+            $.ajax({
+                url: "ajax.php",
+                type: "GET",
+                data: { func: 'getCountData' },
+                success: function(response) {
+                   $('#uploadCounter').text(response.countUploaded);
+                   console.log(response.countDownloaded); 
+                   $('#downloadCounter').text(response.countDownloaded);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error: " + error);
+                }
+            });
+         
          }
 
          function getFilteredData(){
@@ -315,21 +365,27 @@
                
             }
 
-            
-
-            
-
-            
-
-
-
-
             document.getElementById('checkAll').addEventListener('change', function() {
                const checkboxes = document.querySelectorAll('#table-ektp    tbody input[type="checkbox"]');
                for (const checkbox of checkboxes) {
                   checkbox.checked = this.checked;
                }
             });
+
+            function resetAllFilter(){
+               $('#filter-nik').val('');
+               $('#filter-nama').val('');
+               $('#filter-kelurahan').val('');
+               $('#filter-kecamatan').val('');
+               $('#filter-upload-date').val('');
+               $('#filter-status').val('');
+               $('#itemPerPageInput').val('');
+
+               itemsPerPage = 10;
+               getAllData();
+
+               displayPage(1);
+            }
 
            
 
