@@ -143,23 +143,81 @@ function downloadExcelAndData() {
         $sheet = $spreadsheet->getActiveSheet();
 
         // Add headers
-        $sheet->setCellValue('A1', 'NIK');
-        $sheet->setCellValue('B1', 'Nama');
-        $sheet->setCellValue('C1', 'Kelurahan');
-        $sheet->setCellValue('D1', 'Kecamatan');
-        $sheet->setCellValue('E1', 'Upload Date');
-        $sheet->setCellValue('F1', 'Status');
-        // Add more headers as needed
+       // Add headers
+        $sheet->setCellValue('A1', 'NO');
+        $sheet->setCellValue('B1', 'NIK');
+        $sheet->setCellValue('C1', 'Nama');
+        $sheet->setCellValue('D1', 'Jenis Kelamin');
+        $sheet->mergeCells('D1:E1'); // Merge cells D1 and E1 for 'Jenis Kelamin'
+
+        $sheet->setCellValue('F1', 'Tempat Lahir');
+        $sheet->setCellValue('G1', 'Tgl Lahir');
+        
+        $sheet->setCellValue('H1', 'Status Perkawinan');
+        $sheet->mergeCells('H1:I1'); // Merge cells H1 and I1 for 'Status Perkawinan'
+
+        $sheet->setCellValue('J1', 'Pekerjaan');
+        $sheet->setCellValue('K1', 'Alamat');
+        $sheet->setCellValue('L1', 'RT');
+        $sheet->setCellValue('M1', 'RW');
+        $sheet->setCellValue('N1', 'Kelurahan / Desa');
+        $sheet->setCellValue('O1', 'Kecamatan');
+        $sheet->setCellValue('P1', 'Agama');
+            // Add more headers as needed
 
         // Populate data from the database query
         $row = 2;
         while ($row_data = $result->fetch_assoc()) {
-            $sheet->setCellValueExplicit('A' . $row, $row_data['nik'], DataType::TYPE_STRING);
-            $sheet->setCellValue('B' . $row, $row_data['nama']); // Adjust according to your database schema
-            $sheet->setCellValue('C' . $row, $row_data['address_kel_des']); // Adjust according to your database schema
-            $sheet->setCellValue('D' . $row, $row_data['address_kec']); // Adjust according to your database schema
-            $sheet->setCellValue('E' . $row, $row_data['upload_date']); // Adjust according to your database schema
-            $sheet->setCellValue('F' . $row, $row_data['status']); // Adjust according to your database schema
+            // Set index in column A
+            $sheet->setCellValue('A' . $row, $row - 1);
+        
+            // Set NIK as string
+            $sheet->setCellValueExplicit('B' . $row, $row_data['nik'], DataType::TYPE_STRING);
+        
+            // Set other values
+            $sheet->setCellValue('C' . $row, $row_data['nama']); // Adjust according to your database schema
+            $sheet->setCellValue('D' . $row, $row_data['gender']); // Adjust according to your database schema
+        
+            // Conditionally set gender representation
+            $genderShort = (strpos(strtolower($row_data['gender']), 'lak') !== false) ? 'L' : 'P';
+            $sheet->setCellValue('E' . $row, $genderShort);
+        
+            // Format birth date to dd-mm-yyyy
+            $sheet->setCellValue('F' . $row, $row_data['birth_place']);
+
+            $birthDate = date('d-m-Y', strtotime($row_data['birth_date']));
+            $sheet->setCellValue('G' . $row, $birthDate); // Adjust according to your database schema
+        
+        
+            // Determine marital status
+            $marriedStatus = strtolower($row_data['married_status']);
+            if (strpos($marriedStatus, 'belum') !== false) {
+                $marriedStatusText = 'belum menikah';
+            } elseif (strpos($marriedStatus, 'cerai') !== false) {
+                if ($genderShort == 'L') {
+                    $marriedStatusText = 'duda';
+                } else {
+                    $marriedStatusText = 'janda';
+                }
+            } else {
+                $marriedStatusText = 'sudah menikah';
+            }
+            $sheet->setCellValue('H' . $row, $marriedStatusText);
+        
+            // Set marital status short representation
+            $marriedStatusShort = (strpos($marriedStatus, 'belum') !== false) ? 'B' : ((strpos($marriedStatus, 'cerai') !== false) ? 'P' : 'S');
+            $sheet->setCellValue('I' . $row, $marriedStatusShort);
+        
+            // Set other address details
+            $sheet->setCellValue('J' . $row, $row_data['job']); // Adjust according to your database schema
+            $sheet->setCellValue('K' . $row, $row_data['address']);
+            $sheet->setCellValue('L' . $row, $row_data['address_rt']);
+            $sheet->setCellValue('M' . $row, $row_data['address_rw']);
+            $sheet->setCellValue('N' . $row, $row_data['address_kel_des']); // Adjust according to your database schema
+            $sheet->setCellValue('O' . $row, $row_data['address_kec']); // Adjust according to your database schema
+            $sheet->setCellValue('P' . $row, $row_data['religion']); // Adjust according to your database schema
+        
+            // Increment row counter
             $row++;
         }
 
