@@ -80,6 +80,10 @@
                                        <option value="operator" <?php echo (isset($_POST['role']) && $_POST['role'] == 'operator') ? 'selected' : ''; ?>>Operator</option>
                                     </select>
                               </div>
+                              <div class="form-group col-sm-6">
+                                    <label for="password">Password</label>
+                                    <input type="password" class="form-control" id="password" name="username" required>
+                              </div>
                               <div class="form-group col-sm-12">
                                     <label>Address:</label>
                                     <textarea class="form-control" name="address" rows="5" style="line-height: 22px;"><?php echo isset($_POST['address']) ? htmlspecialchars($_POST['address']) : ''; ?></textarea>

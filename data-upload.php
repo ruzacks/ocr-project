@@ -62,7 +62,7 @@
                         <form id="dataForm">
                            <div class="form-group">
                               <label for="phone">No Handpone</label>
-                              <input type="text" class="form-control" id="phone" name="phone" required>
+                              <input type="text" class="form-control" id="phone" name="phone">
                            </div>
                            <div class="form-group">
                               <label for="nik">NIK</label>
@@ -159,7 +159,7 @@
                            </div>
                         </div>
                         <div class="form-group" id="add_1" style="display: none;">
-                           <label for="file_b1" style="text-align: start;">Upload Foto Model B1 - KWK</label>
+                           <label for="file_b1" style="text-align: start;">Upload foto tambahan 1</label>
                            <input type="file" class="form-control-file" id="file_b1">
                         </div>
 
@@ -243,7 +243,7 @@
             function resetForm(){
                $('#dataForm')[0].reset();
                 $('#file_b1').val('');
-                $('#file_additional').val('');
+                // $('#file_additional').val('');
                 $('#imageInput').val('');
                 $('#add_1').hide();
                 $('#add_2').hide();
@@ -311,16 +311,16 @@
                const imageData2 = getImageDataFromImgTag('imagePreview2');
                formData.append('file_b1', imageData2, 'file_b1.jpg');
 
-               if ($('#imagePreview3').attr('src') === '') {
-                  swal.fire({
-                     icon: 'error',
-                     title: 'Error',
-                     text: 'Mohon upload file tambahan.',
-                  });
-                  return; // Exit the function if imageData3 is null
-               }
-               const imageData3 = getImageDataFromImgTag('imagePreview3');
-               formData.append('additional_file', imageData3, 'additional_file.jpg');
+               // if ($('#imagePreview3').attr('src') === '') {
+               //    swal.fire({
+               //       icon: 'error',
+               //       title: 'Error',
+               //       text: 'Mohon upload file tambahan.',
+               //    });
+               //    return; // Exit the function if imageData3 is null
+               // }
+               // const imageData3 = getImageDataFromImgTag('imagePreview3');
+               // formData.append('additional_file', imageData3, 'additional_file.jpg');
 
                 $.ajax({
                     url: 'upload.php', // Endpoint to send the form data

@@ -52,7 +52,7 @@ function addUser(){
     // Assuming you're handling POST data securely, like through validation and sanitization
     $conn = getConn();
 
-    if(empty($_POST['username']) || empty($_POST['phone']) || empty($_POST['address']) || empty($_POST['role'])) {
+    if(empty($_POST['username']) || empty($_POST['password']) || empty($_POST['phone']) || empty($_POST['address']) || empty($_POST['role'])) {
         header("Location: {$_SERVER['HTTP_REFERER']}?error=Please fill in all required fields.");
         exit();
     }
@@ -62,7 +62,8 @@ function addUser(){
     $phone = mysqli_real_escape_string($conn, $_POST['phone']);
     $address = mysqli_real_escape_string($conn, $_POST['address']);
     $role = mysqli_real_escape_string($conn, $_POST['role']);
-    $password = password_hash('password', PASSWORD_DEFAULT); // Hash the password securely
+    $pass = mysqli_real_escape_string($conn, $_POST['password']);
+    $password = password_hash($pass, PASSWORD_DEFAULT); // Hash the password securely
 
     // Check if the username already exists
     $check_username_sql = "SELECT COUNT(*) as count FROM users WHERE username = '$username'";
