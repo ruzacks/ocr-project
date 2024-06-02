@@ -21,6 +21,8 @@ if (isset($_GET['func']) || isset($_POST['func'])) {
         addUser();
     } else if ($functionName === 'editUser') {
         editUser();
+    } else if ($functionName === 'deleteUser') {
+        deleteUser();
     } else if ($functionName === 'changePassword') {
         changePassword();
     } else if ($functionName === 'changeUserStatus') {
@@ -107,7 +109,11 @@ function editUser(){
     $role = mysqli_real_escape_string($conn, $_POST['role']);
 
     // Insert the user into the database
-    $sql = "UPDATE users SET phone = '$phone', address = '$address', role = '$role' WHERE username = '$username'";
+    if(isAdmin()){
+        $sql = "UPDATE users SET phone = '$phone', address = '$address', role = '$role' WHERE username = '$username'";
+    } else {
+        $sql = "UPDATE users SET phone = '$phone', address = '$address' WHERE username = '$username'";
+    }
 
     if (mysqli_query($conn, $sql)) {
         // User added successfully
@@ -197,5 +203,33 @@ function changePassword(){
     mysqli_close($conn);
 }
 
+function deleteUser(){
+    $conn = getConn();
+    $username = $_POST['username'];
+    $role = $_SESSION['role'];
+
+    $response = [];
+
+    if($role != 'administrator'){
+        $response['status'] = "error";
+        $response['message'] = "You don't have previlege!";
+    } else {
+        $sqlDelete = "DELETE from users WHERE username = '$username'";
+        $result = mysqli_query($conn, $sqlDelete);
+        if($result){
+            $response['status'] = "success";
+            $response['message'] = "user $username is deleted";
+        }
+    }
+    header('Content-Type: application/json');
+    echo json_encode($response);
+
+}
+
+function isAdmin(){
+    if($_SESSION['role'] != 'administrator'){
+        return false;
+    }
+}
 
 ?>

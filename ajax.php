@@ -375,7 +375,7 @@ function deleteNik(){
 function getCountData() {
     $conn = getConn();
     $username = $_SESSION['username'];
-    $isChecker = $_SESSION['role'] == 'checker';
+    $isChecker = $_SESSION['role'] == 'operator';
 
     // Uploaded count query
     if ($isChecker) {

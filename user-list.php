@@ -1,4 +1,14 @@
 <?php include('page-protection.php') ?>
+<?php 
+if($_SESSION['role'] !== 'administrator'){
+   if($username != $_SESSION['username']){
+      header("Location: not-found.php");
+      exit();
+   }
+  }
+
+?>
+
 
 <!doctype html>
 <html lang="en">
@@ -163,6 +173,9 @@
       <!-- Custom JavaScript -->
       <script src="js/custom.js"></script>
 
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
       <script>
          getAllUser();
 
@@ -248,6 +261,9 @@
             deleteLink.setAttribute('data-placement', 'top');
             deleteLink.setAttribute('title', 'Delete');
             deleteLink.innerHTML = '<i class="ri-delete-bin-line"></i>';
+            deleteLink.onclick = function() {
+               deleteUser(userData.username);
+            }
             actionDiv.appendChild(editLink);
             actionDiv.appendChild(deleteLink);
             actionCell.appendChild(actionDiv);
@@ -275,6 +291,51 @@
             error: function() {
                   alert('Failed to update status');
                   $(`#customSwitch${username}`).prop('checked', !isChecked); // Revert the checkbox state
+            }
+         });
+      }
+
+      function deleteUser(username){
+         Swal.fire({
+            title: 'Are you sure?',
+            text: `Do you really want to delete the user ${username}? This process cannot be undone.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+         }).then((result) => {
+               if (result.isConfirmed) {
+               $.ajax({
+                  url: 'ajax-user.php',
+                  method: 'POST',
+                  data: { func: 'deleteUser', username: username },
+                  success: function(response) {
+                     Swal.fire({
+                        title: response.status,
+                        text: response.message,
+                        icon: response.status,
+                        confirmButtonText: 'OK',
+                        timer: 1500,
+                        timerProgressBar: true,
+                        didClose: () => {
+                            if (response.status === "success") {
+                                setTimeout(function() {
+                                    location.reload();
+                                }, 1500);
+                            } 
+                        }
+                    });
+                  },
+                  error: function() {
+                     Swal.fire({
+                           title: 'Error!',
+                           text: 'An error occurred while processing your request.',
+                           icon: 'error',
+                           confirmButtonText: 'OK'
+                     });
+                  }
+               });
             }
          });
       }

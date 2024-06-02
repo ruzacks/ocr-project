@@ -119,9 +119,9 @@
                                              <label for="phone">Hand Phone</label>
                                              <input type="text" class="form-control" id="phone" name="phone" required value="<?php echo $user->phone; ?>">
                                        </div>
-                                       <div class="form-group col-sm-6">
+                                       <div class="form-group col-sm-6" <?php echo $_SESSION['role'] != 'administrator' ? 'hidden' : '' ?>>
                                              <label for="role">Role</label>
-                                             <select class="form-control" id="role" name="role" required>
+                                             <select class="form-control" id="role" name="role" required >
                                                 <option selected="" disabled="">Select Role</option>
                                                 <option value="administrator" <?= ($user->role == 'administrator') ? 'selected' : ''; ?>>Administrator</option>
                                                 <option value="checker" <?= ($user->role == 'checker') ? 'selected' : ''; ?>>Checker</option>

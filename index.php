@@ -4,7 +4,7 @@
 <?php 
 $conn = getConn();
 $username = $_SESSION['username'];
-$isChecker = $_SESSION['role'] == 'checker';
+$isChecker = $_SESSION['role'] == 'operator';
 
 // Uploaded count query
 if ($isChecker) {
@@ -142,7 +142,7 @@ $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
                </div>
                <div class="row">
                   <div class="col-lg-12">
-                     <div class="iq-card" <?php echo $_SESSION['role'] == 'checker' ? 'hidden' : '' ?>>
+                     <div class="iq-card" <?php echo $_SESSION['role'] == 'operator' ? 'hidden' : '' ?>>
                         <div class="iq-card-header d-flex justify-content-between">
                            <div class="iq-header-title">
                               <h4 class="card-title">Upload Summary</h4>
