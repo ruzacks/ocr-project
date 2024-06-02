@@ -3,7 +3,7 @@
             <div class="iq-navbar-custom">
                <div class="iq-sidebar-logo">
                   <div class="top-logo">
-                     <a href="index.html" class="logo">
+                     <a href="index.php" class="logo">
                      <img src="images/logo.png" class="img-fluid" alt="">
                      <span>Sofbox</span>
                      </a>
