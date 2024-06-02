@@ -127,7 +127,7 @@ function imagesToPdf($imageFiles) {
 $imageFiles = array(
     $_FILES['e_ktp']['tmp_name'], // Canvas image file
     $_FILES['file_b1']['tmp_name'], // Additional file
-    $_FILES['additional_file']['tmp_name'] // Image file uploaded through the form
+    // $_FILES['additional_file']['tmp_name'] // Image file uploaded through the form
 );
 
 $pdfFilePath = 'D:\xampp8\htdocs\ocr-project\pdfs\\' . $nik . '.pdf'; // Path to save the PDF file
