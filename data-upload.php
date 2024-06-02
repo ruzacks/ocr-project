@@ -1,4 +1,17 @@
 <?php include('page-protection.php') ?>
+<?php include('connection.php') ?>
+<?php 
+
+$conn = getConn();
+
+$sql = "SELECT apiKey FROM api_key WHERE description = 'google_vision'";
+
+$result = mysqli_query($conn, $sql);
+
+// Corrected mysqli_fetch_* function call
+$row = mysqli_fetch_assoc($result);
+$apiKey = $row['apiKey'];
+?>
 
 <!doctype html>
 <html lang="en">
@@ -585,7 +598,7 @@
             // Extract the base64-encoded image data from the src attribute
             const base64Image = imageSrc.split(',')[1];
 
-            const apiKey = 'AIzaSyARoypNpxR2lJ17m5zXesdCtizrdpO_66M';
+            const apiKey = '<?php echo $apiKey ?>';
             const visionApiUrl = `https://vision.googleapis.com/v1/images:annotate?key=${apiKey}`;
 
             const requestPayload = {
