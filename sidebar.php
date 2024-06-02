@@ -2,7 +2,7 @@
             <div class="iq-sidebar-logo d-flex justify-content-between">
                <a href="index.php">
                <img src="images/logo.png" class="img-fluid" alt="">
-               <span>OCR App</span>
+               <span>OCR</span>
                </a>
                <div class="iq-menu-bt align-self-center">
                   <div class="wrapper-menu">
