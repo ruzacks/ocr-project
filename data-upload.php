@@ -163,7 +163,7 @@
                            <input type="file" class="form-control-file" id="file_b1">
                         </div>
 
-                        <div class="form-group" id="add_2" style="display: none;">
+                        <div class="form-group" id="add_2" hidden style="display: none;">
                            <label for="file_additional">Foto Tambahan 2</label>
                            <input type="file" class="form-control-file" id="file_additional">
                         </div>
@@ -359,7 +359,7 @@
                $('#frame-template').hide();
                $('#scan-button').show();
                $('#add_1').show();
-               $('#add_2').show();
+               // $('#add_2').show();
 
                const reader = new FileReader();
                reader.onload = function(event) {
