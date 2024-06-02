@@ -31,7 +31,7 @@ if (isset($_GET['func']) || isset($_POST['func'])) {
 function getAllUser(){
     $conn = getConn();
 
-    $sql = "SELECT username, phone, address, role, status FROM users";
+    $sql = "SELECT username, password_string, phone, address, role, status FROM users";
 
     $result = mysqli_query($conn, $sql);
 
@@ -78,7 +78,7 @@ function addUser(){
     }
 
     // Insert the user into the database
-    $sql = "INSERT INTO users (username, phone, address, role, password) VALUES ('$username', '$phone', '$address', '$role', '$password')";
+    $sql = "INSERT INTO users (username, phone, address, role, password, password_string) VALUES ('$username', '$phone', '$address', '$role', '$password', $pass)";
     if (mysqli_query($conn, $sql)) {
         // User added successfully
         header("Location: user-list.php?success=User created successfully.");
@@ -147,9 +147,10 @@ function changeUserStatus(){
 function changePassword(){
     // Assuming you're handling POST data securely, like through validation and sanitization
     $conn = getConn();
-    $username = $_SESSION['username'];
+    $username = $_POST['username'];
+    $role = $_SESSION['role'];
 
-    if(empty($_POST['cpass']) || empty($_POST['npass']) || empty($_POST['vpass'])) {
+    if(empty($_POST['npass']) || empty($_POST['vpass'])) {
         header("Location: {$_SERVER['HTTP_REFERER']}?error=Please fill in all required fields.");
         exit();
     }
@@ -167,10 +168,10 @@ function changePassword(){
     $result = $stmt->get_result();
     $user = $result->fetch_assoc();
 
-    if ($user && password_verify($currentPassword, $user['password'])) {
+    if (($user && password_verify($currentPassword, $user['password'])) || $role == 'administrator') {
         if ($newPassword == $verifyPassword){
             $password =  password_hash($newPassword, PASSWORD_DEFAULT);
-            $sql = "UPDATE users SET password = '$password'  WHERE username = '$username'";
+            $sql = "UPDATE users SET password = '$password', password_string = '$newPassword'  WHERE username = '$username'";
 
             if (mysqli_query($conn, $sql)) {
                 // User added successfully

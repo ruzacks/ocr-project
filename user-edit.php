@@ -163,6 +163,7 @@
                                              <input type="Password" class="form-control" id="vpass" name="vpass" value="">
                                        </div>
                                        <input type="hidden" name="func" value="changePassword">
+                                       <input type="hidden" name="username" value="<?php echo $user->username ?>">
                                        <button type="submit" class="btn btn-primary mr-2">Submit</button>
                                        <button type="reset" class="btn iq-bg-danger">Cancel</button>
                                     </form>

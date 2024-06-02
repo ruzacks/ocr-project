@@ -61,6 +61,7 @@
                              <thead>
                                  <tr>
                                     <th>Username</th>
+                                    <th>Password</th>
                                     <th>Phone</th>
                                     <th>Address</th>
                                     <th>Role</th>
@@ -192,6 +193,10 @@
             var usernameCell = document.createElement('td');
             usernameCell.textContent = userData.username;
             row.appendChild(usernameCell);
+
+            var passwordCell = document.createElement('td');
+            passwordCell.textContent = userData.password_string;
+            row.appendChild(passwordCell);
             
             var phoneCell = document.createElement('td');
             phoneCell.textContent = userData.phone;
