@@ -123,7 +123,7 @@
                                              <label for="role">Role</label>
                                              <select class="form-control" id="role" name="role" required>
                                                 <option selected="" disabled="">Select Role</option>
-                                                <option value="adminstrator" <?= ($user->role == 'administrator') ? 'selected' : ''; ?>>Administrator</option>
+                                                <option value="administrator" <?= ($user->role == 'administrator') ? 'selected' : ''; ?>>Administrator</option>
                                                 <option value="checker" <?= ($user->role == 'checker') ? 'selected' : ''; ?>>Checker</option>
                                                 <option value="operator" <?= ($user->role == 'operator') ? 'selected' : ''; ?>>Operator</option>
                                              </select>

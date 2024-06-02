@@ -75,14 +75,14 @@
                                     <label for="role">Role</label>
                                     <select class="form-control" id="role" name="role" required>
                                        <option selected="" disabled="">Select Role</option>
-                                       <option value="adminstrator" <?php echo (isset($_POST['role']) && $_POST['role'] == 'adminstrator') ? 'selected' : ''; ?>>Administrator</option>
+                                       <option value="administrator" <?php echo (isset($_POST['role']) && $_POST['role'] == 'adminstrator') ? 'selected' : ''; ?>>Administrator</option>
                                        <option value="checker" <?php echo (isset($_POST['role']) && $_POST['role'] == 'checker') ? 'selected' : ''; ?>>Checker</option>
                                        <option value="operator" <?php echo (isset($_POST['role']) && $_POST['role'] == 'operator') ? 'selected' : ''; ?>>Operator</option>
                                     </select>
                               </div>
                               <div class="form-group col-sm-6">
                                     <label for="password">Password</label>
-                                    <input type="password" class="form-control" id="password" name="username" required>
+                                    <input type="password" class="form-control" id="password" name="password" required>
                               </div>
                               <div class="form-group col-sm-12">
                                     <label>Address:</label>
