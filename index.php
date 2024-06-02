@@ -134,6 +134,8 @@ $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
                            <div class="clearfix"></div>
                            <div class="text-center">
                               <h2 class="mb-0"><span class="counter" id="downloadCounter"><?php echo $countDownloaded ?></span><span></span></h2>
+                              <p class="mb-0 text-secondary line-height"></i><span class="text-success" id="remainingUpload"><?php echo $countUploaded - $countDownloaded ?></span> Data belum di download</p>
+
                            </div>
                         </div>
                         <div id="chart-2"></div>
@@ -176,7 +178,7 @@ $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
                                        </th> <!-- No filter for the action column -->
                                     </tr>
                                     <tr>
-                                       <th scope="col"><input type="checkbox" id="checkAll">NIK</th>
+                                       <th scope="col"><input type="checkbox" id="checkAll">NIK<span id="tickCounter"></span></th>
                                        <th scope="col">Nama</th>
                                        <th scope="col">Kelurahan</th>
                                        <th scope="col">Kecamatan</th>
@@ -273,7 +275,9 @@ $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
       <script>
 
          getAllData();
-         // getCountData();
+         setInterval(function() {
+            getCountData(); // Call your function inside the setInterval
+         }, 3000);
 
          let currentPage = 1;
          let itemsPerPage = 10;
@@ -304,8 +308,11 @@ $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
                 data: { func: 'getCountData' },
                 success: function(response) {
                    $('#uploadCounter').text(response.countUploaded);
-                   console.log(response.countDownloaded); 
                    $('#downloadCounter').text(response.countDownloaded);
+                   const remaining = response.countUploaded - response.countDownloaded;
+                   $('#remainingUpload').text(remaining);
+
+                   console.log($('#remainingUpload').text());
                 },
                 error: function(xhr, status, error) {
                     console.error("Error: " + error);
@@ -369,8 +376,30 @@ $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
                const checkboxes = document.querySelectorAll('#table-ektp    tbody input[type="checkbox"]');
                for (const checkbox of checkboxes) {
                   checkbox.checked = this.checked;
+                  checkbox.dispatchEvent(new Event('change'));
                }
+               updateCounter();
             });
+
+            function updateCounter() {
+               // Reset counter
+               var tickedCounter = 0;
+               // Get all checkboxes
+               const checkboxes = document.querySelectorAll('#table-ektp tbody input[type="checkbox"]');
+               // Count ticked checkboxes
+               checkboxes.forEach(function(checkbox) {
+                  if (checkbox.checked) {
+                        tickedCounter++;
+                  }
+               });
+
+               if(tickedCounter > 0){
+                  $('#tickCounter').text('(' + tickedCounter + ')');
+               } else {
+                  $('#tickCounter').text('');
+               }
+               // Display the updated count
+            }
 
             function resetAllFilter(){
                $('#filter-nik').val('');
@@ -386,6 +415,10 @@ $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
 
                displayPage(1);
             }
+
+            
+
+          
 
            
 

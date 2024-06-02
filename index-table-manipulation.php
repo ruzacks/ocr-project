@@ -83,6 +83,7 @@
         // Create checkbox
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
+        checkbox.addEventListener('change', updateCounter);
 
         // Append checkbox before the text content of tdNik
         tdNik.appendChild(checkbox);

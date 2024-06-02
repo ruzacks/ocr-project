@@ -398,6 +398,7 @@ function getCountData() {
     $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
 
     // Return counts in JSON
+    header('Content-Type: application/json');
     echo json_encode([
         'countUploaded' => $countUploaded,
         'countDownloaded' => $countDownloaded
