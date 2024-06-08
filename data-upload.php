@@ -79,7 +79,7 @@ $apiKey = $row['apiKey'];
                            </div>
                            <div class="form-group">
                               <label for="nik">NIK</label>
-                              <input type="text" class="form-control" id="nik" name="nik" maxlength="16" minlength="16" pattern="\d{16}" required>
+                              <input type="text" class="form-control" id="nik" name="nik" maxlength="16" minlength="16" pattern="\d{16}" inputmode="numeric" required>
                            </div>
                            <div class="form-group">
                               <label for="nama">NAMA</label>
