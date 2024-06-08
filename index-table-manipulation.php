@@ -322,7 +322,7 @@
         displayPage(activePage);
     }
 
-    function reloadNumberofPage(){
+    async function reloadNumberofPage(){
         itemsPerPage = parseInt($('#itemPerPageInput').val());
 
         if(itemsPerPage == 0 || itemsPerPage == null){
@@ -337,12 +337,12 @@
         let status = $('#filter-status').val().toLowerCase();
 
     if (nik || nama || kelurahan || kecamatan || uploadDate || status) {
-        getFilteredData();
-        displayPage(1);
+       await getFilteredData();
     } else {
-        getAllData();
-        displayPage(1);
+       await getAllData();
     }
+    
+    displayPage(1);
 
     }
 

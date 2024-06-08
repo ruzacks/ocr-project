@@ -150,7 +150,7 @@ $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
                               <h4 class="card-title">Upload Summary</h4>
                            </div>
                            <div class="iq-card-header-toolbar d-flex align-items-center">
-                           <input type="number" class="form-control" id="itemPerPageInput" onchange="reloadNumberofPage()" placeholder="10" style="width: 100px;">
+                           <input type="number" class="form-control" id="selectingItem" oninput="selectingItemFunc()" placeholder="0" style="width: 100px;">
                            <a onclick="downloadSelection()" style="cursor: pointer;"><i class="ri-file-download-fill mr-2"></i>Download Selected</a>
                            </div>
                         </div>
@@ -194,20 +194,33 @@ $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
                               </table>
                               </div>
                            </div>
-                           
-                           <nav aria-label="Page navigation example">
-                              <ul class="pagination justify-content-center" id="pagination" style="cursor:pointer">
-                                 <li class="page-item disabled">
-                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-                                 </li>
-                                 <li class="page-item"><a class="page-link" href="#">1</a></li>
-                                 <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                 <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                 <li class="page-item">
-                                    <a class="page-link" href="#">Next</a>
-                                 </li>
-                              </ul>
-                           </nav>
+                           <div class="row justify-content-center">
+                              <div class="col">
+                              <select class="" style="margin-top: 20px;" id="itemPerPageInput" onchange="reloadNumberofPage()">
+                                 <option selected="" disabled="">Select data each page</option>
+                                 <option>100</option>
+                                 <option>200</option>
+                                 <option>300</option>
+                                 <option>400</option>
+                                 <option>500</option>
+                              </select>
+                              </div>
+                              <div class="col">                           
+                                 <nav aria-label="Page navigation example" style="margin-top: 20px;">
+                                 <ul class="pagination justify-content-end" id="pagination" style="cursor:pointer">
+                                    <li class="page-item disabled">
+                                       <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                                    </li>
+                                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                    <li class="page-item">
+                                       <a class="page-link" href="#">Next</a>
+                                    </li>
+                                 </ul>
+                              </nav>
+                           </div>
+                           </div>
                         </div>
                      </div>
                   </div>
@@ -280,7 +293,7 @@ $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
          }, 3000);
 
          let currentPage = 1;
-         let itemsPerPage = 10;
+         let itemsPerPage = 100;
          let dataCache = [];
 
          function getAllData() {
@@ -371,6 +384,43 @@ $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
                return collectedData;
                
             }
+
+            async function selectingItemFunc() {
+               // Get the number of items to select from the input field
+               const numToSelect = parseInt(document.getElementById('selectingItem').value);
+
+               // Select the item per page dropdown
+               const itemPerPageInput = document.getElementById('itemPerPageInput');
+               const itemPerPageOptions = Array.from(itemPerPageInput.options);
+               
+               // Get the current item per page value
+               let currentItemPerPage = parseInt(itemPerPageInput.value) || 0;
+
+               // If numToSelect is larger than currentItemPerPage, update itemPerPageInput
+               if (numToSelect > currentItemPerPage) {
+                  const newOption = itemPerPageOptions.find(option => parseInt(option.value) >= numToSelect);
+                  if (newOption) {
+                     itemPerPageInput.value = newOption.value;
+                     await reloadNumberofPage();
+                  }
+               }
+
+               // Select all checkboxes within the table
+               const checkboxes = document.querySelectorAll('table tbody input[type="checkbox"]');
+
+               // Ensure all checkboxes are unchecked first
+               checkboxes.forEach(checkbox => {
+                  checkbox.checked = false;
+                  checkbox.dispatchEvent(new Event('change')); // Trigger change event on unchecking
+               });
+
+               // Tick the specified number of checkboxes
+               for (let i = 0; i < numToSelect && i < checkboxes.length; i++) {
+                  checkboxes[i].checked = true;
+                  checkboxes[i].dispatchEvent(new Event('change')); // Trigger change event on checking
+               }
+         }
+
 
             document.getElementById('checkAll').addEventListener('change', function() {
                const checkboxes = document.querySelectorAll('#table-ektp    tbody input[type="checkbox"]');
