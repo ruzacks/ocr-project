@@ -125,12 +125,12 @@ function imagesToPdf($imageFiles) {
 
 // Example usage:
 $imageFiles = array(
-    $_FILES['e_ktp']['tmp_name'], // Canvas image file
+    // $_FILES['e_ktp']['tmp_name'], // Canvas image file
     $_FILES['file_b1']['tmp_name'], // Additional file
     // $_FILES['additional_file']['tmp_name'] // Image file uploaded through the form
 );
 
-$pdfFilePath = 'D:\xampp8\htdocs\ocr-project\pdfs\\' . $nik . '.pdf'; // Path to save the PDF file
+$pdfFilePath = '/home/deme5438/public_html/pdfs/' . $nik . '.pdf'; // Path to save the PDF file
 $pdf = imagesToPdf($imageFiles);
 $pdf->Output($pdfFilePath, 'F'); // Save the PDF file
 
