@@ -30,9 +30,37 @@ $job = $_POST['job'];
 $national = $_POST['national'];
 $username = $_SESSION['username'];
 
+// Check if nik exists
+$checkNikStmt = $conn->prepare("SELECT COUNT(*) FROM ektps WHERE nik = ?");
+$checkNikStmt->bind_param("s", $nik);
+$checkNikStmt->execute();
+$checkNikStmt->bind_result($count);
+$checkNikStmt->fetch();
+$checkNikStmt->close();
 
 $response = array(); // Initialize response array
 
+if ($count > 0) {
+
+    $response['status'] = "error";
+    $response['message'] = "NIK sudah terdaftar";
+    
+    header('Content-Type: application/json');
+    echo json_encode($response);
+    exit; // Make sure to stop further execution
+}
+
+
+if (!isset($_FILES['file_b1']) || !is_uploaded_file($_FILES['file_b1']['tmp_name'])) {
+    $response = [
+        'status' => 'error',
+        'message' => 'Gagal Menyimpan Data'
+    ];
+    
+    header('Content-Type: application/json');
+    echo json_encode($response);
+    exit; // Make sure to stop further execution
+}
 
 
 
@@ -134,19 +162,21 @@ $pdfFilePath = '/home/deme5438/public_html/pdfs/' . $nik . '.pdf'; // Path to sa
 $pdf = imagesToPdf($imageFiles);
 $pdf->Output($pdfFilePath, 'F'); // Save the PDF file
 
-if($pdf){
+$pdfPath = 'pdfs/' . $nik . '.pdf';
+
+if(file_exists($pdfPath)){
     try {
         if ($stmt->execute()) {
             $response['status'] = "success";
             $response['message'] = "Data saved successfully";
         }
     } catch (mysqli_sql_exception $e) {
-        unlink($pdfFilePath);
         $error_message = $e->getMessage();
         if (strpos($error_message, "Duplicate entry") !== false) {
             $response['status'] = "error";
             $response['message'] = "NIK sudah terdaftar";
         } else {
+            unlink($pdfFilePath);
             $response['status'] = "error";
             $response['message'] = "Error: " . $error_message;
         }
@@ -158,6 +188,9 @@ if($pdf){
 
 
 $stmt->close();
+
+
+
 $conn->close();
 
 header('Content-Type: application/json');

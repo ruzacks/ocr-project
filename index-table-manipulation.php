@@ -78,15 +78,22 @@
     function createRow(data) {
         const tr = document.createElement('tr');
 
-        const tdNik = document.createElement('td');
+        
+
+        var tdNik = document.createElement('td');
+        if (data.file_exist === "no") {
+            tdNik.classList.add('red-font');
+        }
 
         // Create checkbox
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.addEventListener('change', updateCounter);
+        if(data.file_exist === 'yes'){
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.addEventListener('change', updateCounter);
+            // Append checkbox before the text content of tdNik
+            tdNik.appendChild(checkbox);
+        }
 
-        // Append checkbox before the text content of tdNik
-        tdNik.appendChild(checkbox);
         
         // Add a space between checkbox and nik
         tdNik.appendChild(document.createTextNode(' ' + data.nik));
@@ -127,13 +134,14 @@
 
         const tdAction = document.createElement('td');
 
-        const downloadButton = document.createElement('button');
-        downloadButton.type = 'button';
-        downloadButton.className = 'btn btn-success mb-3 ';
-        downloadButton.innerHTML = '<i class="ri-download-fill pr-0"></i>';
-        downloadButton.onclick = function() { downloadSelected(data.nik); };
-        tdAction.appendChild(downloadButton);
-
+        if(data.file_exist == 'yes'){
+            const downloadButton = document.createElement('button');
+            downloadButton.type = 'button';
+            downloadButton.className = 'btn btn-success mb-3 ';
+            downloadButton.innerHTML = '<i class="ri-download-fill pr-0"></i>';
+            downloadButton.onclick = function() { downloadSelected(data.nik); };
+            tdAction.appendChild(downloadButton);
+        }
         const rejectButton = document.createElement('button');
         rejectButton.type = 'button';
         rejectButton.className = 'btn btn-danger mb-3 mx-1';

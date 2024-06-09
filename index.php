@@ -47,6 +47,11 @@ $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
       <link rel="stylesheet" href="css/responsive.css">
 
       <style>
+
+         .red-font {
+            color: red;
+         }
+         
         table {
             width: 100%;
             border-collapse: collapse;

@@ -46,7 +46,7 @@ if (isset($_GET['func']) || isset($_POST['func'])) {
 
 function getAllData() {
     $conn = getConn();
-    $query = "SELECT nik, nama, address_kel_des, address_kec, upload_date,status FROM ektps";
+    $query = "SELECT nik, nama, address_kel_des, address_kec, upload_date, status FROM ektps";
 
     // Add the limit of 1000 records
     $query .= " LIMIT 1000";
@@ -55,6 +55,19 @@ function getAllData() {
 
     if ($result) {
         $data = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+        foreach ($data as &$record) {
+            $nik = $record['nik'];
+            $pdfPath = "pdfs/$nik.pdf";
+
+            if (file_exists($pdfPath)) {
+                // Add additional data if the PDF exists
+                $record['file_exist'] = "yes";
+            } else {
+                $record['file_exist'] = "no";
+            }
+        }
+
         header('Content-Type: application/json');
         echo json_encode($data);
     } else {
@@ -65,6 +78,7 @@ function getAllData() {
 
     mysqli_close($conn);
 }
+
 
 function getFilteredData(){
     $conn = getConn();
@@ -116,6 +130,19 @@ function getFilteredData(){
 
     if ($result) {
         $data = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+        foreach ($data as &$record) {
+            $nik = $record['nik'];
+            $pdfPath = "pdfs/$nik.pdf";
+
+            if (file_exists($pdfPath)) {
+                // Add additional data if the PDF exists
+                $record['file_exist'] = "yes";
+            } else {
+                $record['file_exist'] = "no";
+            }
+        }
+        
         header('Content-Type: application/json');
         echo json_encode($data);
     } else {
