@@ -162,12 +162,12 @@ function getFilteredData(){
 function deleteOldDataFiles() {
     $tempDir = sys_get_temp_dir();
     $currentTimestamp = time();
-    $twoHoursAgoTimestamp = $currentTimestamp - (2 * 60 * 60); // Two hours in seconds
+    $thirtyMinutesAgoTimestamp = $currentTimestamp - (30 * 60); // 30 minutes in seconds
 
     $files = scandir($tempDir);
     foreach ($files as $file) {
         $filePath = $tempDir . DIRECTORY_SEPARATOR . $file;
-        if (is_file($filePath) && strpos($file, "data_") !== false && filectime($filePath) < $twoHoursAgoTimestamp) {
+        if (is_file($filePath) && strpos($file, "data_") !== false && filectime($filePath) < $thirtyMinutesAgoTimestamp) {
             unlink($filePath);
         }
     }
