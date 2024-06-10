@@ -34,6 +34,8 @@ if (isset($_GET['func']) || isset($_POST['func'])) {
         getCountData();
     }  else if ($functionName === 'deleteOldDownloadedData') {
         deleteOldDownloadedData();
+    } else if ($functionName === 'deleteOldDataFiles') {
+        deleteOldDataFiles();
     } else {
         // Handle the case where the function name is not recognized
         header('Content-Type: application/json');
@@ -156,6 +158,21 @@ function getFilteredData(){
     mysqli_close($conn);
 
 }
+
+function deleteOldDataFiles() {
+    $tempDir = sys_get_temp_dir();
+    $currentTimestamp = time();
+    $twoHoursAgoTimestamp = $currentTimestamp - (2 * 60 * 60); // Two hours in seconds
+
+    $files = scandir($tempDir);
+    foreach ($files as $file) {
+        $filePath = $tempDir . DIRECTORY_SEPARATOR . $file;
+        if (is_file($filePath) && strpos($file, "data_") !== false && filectime($filePath) < $twoHoursAgoTimestamp) {
+            unlink($filePath);
+        }
+    }
+}
+
 
 function downloadExcelAndData() {
     $conn = getConn();
