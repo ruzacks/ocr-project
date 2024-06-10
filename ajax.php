@@ -32,6 +32,8 @@ if (isset($_GET['func']) || isset($_POST['func'])) {
         deleteNik();
     } else if ($functionName === 'getCountData') {
         getCountData();
+    }  else if ($functionName === 'deleteOldDownloadedData') {
+        deleteOldDownloadedData();
     } else {
         // Handle the case where the function name is not recognized
         header('Content-Type: application/json');
