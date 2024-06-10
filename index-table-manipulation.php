@@ -113,7 +113,12 @@
         tr.appendChild(tdKecamatan);
 
         const tdUploadDate = document.createElement('td');
+        const lineBreak = document.createElement('br');
+        const uploadByText = document.createTextNode(data.upload_by);
+
         tdUploadDate.textContent = formatDate(data.upload_date);
+        tdUploadDate.appendChild(lineBreak);
+        tdUploadDate.appendChild(uploadByText);
         tr.appendChild(tdUploadDate);
 
         const tdStatus = document.createElement('td');

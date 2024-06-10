@@ -48,7 +48,7 @@ if (isset($_GET['func']) || isset($_POST['func'])) {
 
 function getAllData() {
     $conn = getConn();
-    $query = "SELECT nik, nama, address_kel_des, address_kec, upload_date, status FROM ektps";
+    $query = "SELECT nik, nama, address_kel_des, address_kec, upload_date, status, upload_by FROM ektps";
 
     // Add the limit of 1000 records
     $query .= " LIMIT 2000";
@@ -84,7 +84,7 @@ function getAllData() {
 
 function getFilteredData(){
     $conn = getConn();
-    $query = "SELECT nik, nama, address_kel_des, address_kec, upload_date,status FROM ektps";
+    $query = "SELECT nik, nama, address_kel_des, address_kec, upload_date,status, upload_by FROM ektps";
 
     $whereClauses = [];
 
