@@ -49,7 +49,7 @@ function getAllData() {
     $query = "SELECT nik, nama, address_kel_des, address_kec, upload_date, status FROM ektps";
 
     // Add the limit of 1000 records
-    $query .= " LIMIT 1000";
+    $query .= " LIMIT 2000";
 
     $result = mysqli_query($conn, $query);
 
@@ -124,7 +124,7 @@ function getFilteredData(){
     }
 
     // Add the limit of 1000 records
-    $query .= " LIMIT 1000";
+    $query .= " LIMIT 2000";
 
     $result = mysqli_query($conn, $query);
 
@@ -398,6 +398,73 @@ function deleteNik(){
 
     echo json_encode($response);
 }
+
+function deleteOldDownloadedData() {
+    $conn = getConn();
+    if ($conn === false) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Database connection failed'
+        ]);
+        return;
+    }
+
+    // Get the current time and calculate the threshold time (30 minutes ago)
+    $currentTime = new DateTime();
+    $thresholdTime = $currentTime->sub(new DateInterval('PT30M'))->format('Y-m-d H:i:s');
+
+    // Query to get all downloaded data older than 30 minutes
+    $sqlSelect = "SELECT nik FROM ektps WHERE reg_time < '$thresholdTime' AND status = 'downloaded'";
+    $result = $conn->query($sqlSelect);
+
+    if ($result === false) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Failed to retrieve data'
+        ]);
+        return;
+    }
+
+    $niks = [];
+    while ($row = $result->fetch_assoc()) {
+        $niks[] = $row['nik'];
+    }
+
+    if (empty($niks)) {
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'No data to delete'
+        ]);
+        return;
+    }
+
+    $niksString = "'" . implode("','", $niks) . "'";
+
+    // Delete the old records from the database
+    $sqlDelete = "DELETE FROM ektps WHERE nik IN ($niksString)";
+    $deleteResult = $conn->query($sqlDelete);
+
+    if ($deleteResult) {
+        foreach ($niks as $nik) {
+            $filePath = __DIR__ . "/pdfs/$nik.pdf";
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+        }
+
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Old data and associated files deleted'
+        ]);
+    } else {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Failed to delete old data'
+        ]);
+    }
+}
+
+
 
 function getCountData() {
     $conn = getConn();

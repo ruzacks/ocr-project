@@ -471,6 +471,40 @@ $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
                displayPage(1);
             }
 
+            function deleteDownloadedData() {
+               $.ajax({
+                  url: 'ajax.php',
+                  type: 'GET',
+                  data: { func: 'deleteOldDownloadedData' },
+                  success: function(response) {
+                        // Parse the JSON response
+                        var responseData = JSON.parse(response);
+
+                        // Display the SweetAlert message
+                        Swal.fire({
+                           icon: responseData.status,
+                           text: responseData.message
+                        });
+
+                        // If the response status is "success", process the collectedData array
+                        if (responseData.status === "success") {
+                           collectedData.forEach(function(rowData) {
+                              deleteFromCache(function(obj) {
+                                    return obj.nik === rowData.nik;
+                              });
+                           });
+                        }
+                  },
+                  error: function(xhr, status, error) {
+                        // Handle any errors that occur during the AJAX request
+                        Swal.fire({
+                           icon: 'error',
+                           text: 'An error occurred: ' + error
+                        });
+                  }
+               });
+            }
+
             
 
           
