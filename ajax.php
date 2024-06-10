@@ -416,7 +416,7 @@ function deleteOldDownloadedData() {
     $thresholdTime = $currentTime->sub(new DateInterval('PT30M'))->format('Y-m-d H:i:s');
 
     // Query to get all downloaded data older than 30 minutes
-    $sqlSelect = "SELECT nik FROM ektps WHERE reg_time < '$thresholdTime' AND status = 'downloaded'";
+    $sqlSelect = "SELECT nik FROM ektps WHERE reg_date < '$thresholdTime' AND status = 'downloaded'";
     $result = $conn->query($sqlSelect);
 
     if ($result === false) {
