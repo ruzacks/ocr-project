@@ -165,13 +165,55 @@ function deleteOldDataFiles() {
     $thirtyMinutesAgoTimestamp = $currentTimestamp - (30 * 60); // 30 minutes in seconds
 
     $files = scandir($tempDir);
+    $filesDeleted = 0;
+
     foreach ($files as $file) {
         $filePath = $tempDir . DIRECTORY_SEPARATOR . $file;
-        if (is_file($filePath) && strpos($file, "data_") !== false && filectime($filePath) < $thirtyMinutesAgoTimestamp) {
-            unlink($filePath);
+        if (strpos($file, "data_") === 0 && filectime($filePath) < $thirtyMinutesAgoTimestamp) {
+            if (is_file($filePath)) {
+                if (unlink($filePath)) {
+                    $filesDeleted++;
+                }
+            } elseif (is_dir($filePath)) {
+                // Attempt to delete the directory
+                // Note: This will only work if the directory is empty
+                if (rmdir($filePath)) {
+                    $filesDeleted++;
+                } else {
+                    // If the directory is not empty, you need to recursively delete its contents first
+                    $filesDeleted += deleteDirectory($filePath);
+                }
+            }
         }
     }
+
+
+    if ($filesDeleted > 0) {
+        echo "$filesDeleted file(s) successfully deleted.";
+    } else {
+        echo $files;
+    }
 }
+
+function deleteDirectory($dir) {
+    $itemsDeleted = 0;
+    $files = array_diff(scandir($dir), array('.', '..'));
+    foreach ($files as $file) {
+        $filePath = $dir . DIRECTORY_SEPARATOR . $file;
+        if (is_dir($filePath)) {
+            $itemsDeleted += deleteDirectory($filePath);
+        } else {
+            if (unlink($filePath)) {
+                $itemsDeleted++;
+            }
+        }
+    }
+    if (rmdir($dir)) {
+        $itemsDeleted++;
+    }
+    return $itemsDeleted;
+}
+
 
 
 function downloadExcelAndData() {
