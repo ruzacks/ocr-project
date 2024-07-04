@@ -152,7 +152,7 @@ $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
                      <div class="iq-card" <?php echo $_SESSION['role'] == 'operator' ? 'hidden' : '' ?>>
                         <div class="iq-card-header d-flex justify-content-between">
                            <div class="iq-header-title">
-                              <h4 class="card-title">Upload Summary</h4>
+                              <h4 class="card-title">Upload Summary's</h4>
                            </div>
                            <div class="iq-card-header-toolbar d-flex align-items-center">
                            <input type="number" class="form-control" id="selectingItem" oninput="selectingItemFunc()" placeholder="0" style="width: 100px;">
