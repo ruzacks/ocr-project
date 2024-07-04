@@ -86,7 +86,7 @@ function getAllData() {
 
 function getFilteredData(){
     $conn = getConn();
-    $query = "SELECT nik, nama, address_kel_des, address_kec, upload_date,status, upload_by FROM ektps";
+    $query = "SELECT nik, nama, address_kel_des, address_kec, upload_date,status, upload_by, old_data FROM ektps";
 
     $whereClauses = [];
 
