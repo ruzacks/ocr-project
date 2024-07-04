@@ -77,8 +77,9 @@
 
     function createRow(data) {
         const tr = document.createElement('tr');
-
-        
+        if (data.old_data == 1) {
+            tr.classList.add('blue-font');
+        }        
 
         var tdNik = document.createElement('td');
         if (data.file_exist === "no") {

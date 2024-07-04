@@ -50,7 +50,7 @@ if (isset($_GET['func']) || isset($_POST['func'])) {
 
 function getAllData() {
     $conn = getConn();
-    $query = "SELECT nik, nama, address_kel_des, address_kec, upload_date, status, upload_by FROM ektps";
+    $query = "SELECT nik, nama, address_kel_des, address_kec, upload_date, status, upload_by, old_data FROM ektps";
 
     // Add the limit of 1000 records
     $query .= " LIMIT 2000";
