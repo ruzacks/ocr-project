@@ -158,7 +158,7 @@ $imageFiles = array(
     // $_FILES['additional_file']['tmp_name'] // Image file uploaded through the form
 );
 
-$pdfFilePath = '/home/deme5438/public_html/pdfs/' . $nik . '.pdf'; // Path to save the PDF file
+$pdfFilePath = __DIR__. '/pdfs/' . $nik . '.pdf'; // Path to save the PDF file
 $pdf = imagesToPdf($imageFiles);
 $pdf->Output($pdfFilePath, 'F'); // Save the PDF file
 
