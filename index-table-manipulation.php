@@ -192,19 +192,22 @@
             downloadButton.onclick = function() { downloadSelected(data.nik); };
             tdAction.appendChild(downloadButton);
         }
-        const rejectButton = document.createElement('button');
-        rejectButton.type = 'button';
-        rejectButton.className = 'btn btn-danger mb-3 mx-1';
-        rejectButton.innerHTML = '<i class="ri-forbid-fill pr-0"></i>';
-        rejectButton.onclick = function() {rejectSelected(data.nik); };
-        tdAction.appendChild(rejectButton);
 
-        const deleteButton = document.createElement('button');
-        deleteButton.type = 'button';
-        deleteButton.className = 'btn btn-warning mb-3';
-        deleteButton.innerHTML = '<i class="ri-delete-bin-2-fill pr-0"></i>';
-        deleteButton.onclick = function() {deleteSelected(data.nik); };
-        tdAction.appendChild(deleteButton);
+        if(data.old_data == 0){
+            const rejectButton = document.createElement('button');
+            rejectButton.type = 'button';
+            rejectButton.className = 'btn btn-danger mb-3 mx-1';
+            rejectButton.innerHTML = '<i class="ri-forbid-fill pr-0"></i>';
+            rejectButton.onclick = function() {rejectSelected(data.nik); };
+            tdAction.appendChild(rejectButton);
+    
+            const deleteButton = document.createElement('button');
+            deleteButton.type = 'button';
+            deleteButton.className = 'btn btn-warning mb-3';
+            deleteButton.innerHTML = '<i class="ri-delete-bin-2-fill pr-0"></i>';
+            deleteButton.onclick = function() {deleteSelected(data.nik); };
+            tdAction.appendChild(deleteButton);
+        }
 
         tr.appendChild(tdAction);
 

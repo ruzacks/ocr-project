@@ -8,19 +8,30 @@ $isChecker = $_SESSION['role'] == 'operator';
 
 // Uploaded count query
 if ($isChecker) {
-    $sqlUploaded = "SELECT COUNT(*) as count FROM ektps WHERE upload_by = '$username'";
+   $sqlUploaded = "SELECT COUNT(*) as count FROM ektps WHERE upload_by = '$username' AND old_data = 1";
 } else {
-    $sqlUploaded = "SELECT COUNT(*) as count FROM ektps";
+   $sqlUploaded = "SELECT COUNT(*) as count FROM ektps WHERE old_data = 1";
 }
 
 $resultUploaded = $conn->query($sqlUploaded);
 $countUploaded = mysqli_fetch_assoc($resultUploaded)['count'];
 
+// Uploaded count query
+if ($isChecker) {
+   $sqlUploadedNew = "SELECT COUNT(*) as count FROM ektps WHERE upload_by = '$username' AND old_data = 0";
+} else {
+   $sqlUploadedNew = "SELECT COUNT(*) as count FROM ektps WHERE old_data = 0";
+}
+
+$resultUploadedNew = $conn->query($sqlUploadedNew);
+$countUploadedNew = mysqli_fetch_assoc($resultUploadedNew)['count'];
+
+
 // Downloaded count query
 if ($isChecker) {
-    $sqlDownloaded = "SELECT COUNT(*) as count FROM ektps WHERE status = 'downloaded' AND upload_by = '$username'";
+   $sqlDownloaded = "SELECT COUNT(*) as count FROM ektps WHERE status = 'downloaded' AND upload_by = '$username' AND old_data = 0";
 } else {
-    $sqlDownloaded = "SELECT COUNT(*) as count FROM ektps WHERE status = 'downloaded'";
+   $sqlDownloaded = "SELECT COUNT(*) as count FROM ektps WHERE status = 'downloaded' AND old_data = 0";
 }
 
 $resultDownloaded = $conn->query($sqlDownloaded);
@@ -129,7 +140,7 @@ $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
                            <span class="float-right line-height-6">Uploaded</span>
                            <div class="clearfix"></div>
                            <div class="text-center">
-                              <h2 class="mb-0"><span class="counter" id="uploadCounter"><?php echo $countUploaded ?></span><span></span></h2>
+                              <h2 class="mb-0"><span class="counter" id="uploadCounter"><?php echo $countUploaded + $countUploadedNew ?></span><span></span></h2>
                            </div>
                         </div>
                         <div id="chart-1"></div>
@@ -142,8 +153,8 @@ $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
                            <span class="float-right line-height-6" >Downloaded</span>
                            <div class="clearfix"></div>
                            <div class="text-center">
-                              <h2 class="mb-0"><span class="counter" id="downloadCounter"><?php echo $countDownloaded ?></span><span></span></h2>
-                              <p class="mb-0 text-secondary line-height"></i><span class="text-success" id="remainingUpload"><?php echo $countUploaded - $countDownloaded ?></span> Data belum di download</p>
+                              <h2 class="mb-0"><span class="counter" id="downloadCounter"><?php echo $countUploaded + $countDownloaded ?></span><span></span></h2>
+                              <p class="mb-0 text-secondary line-height"></i><span class="text-success" id="remainingUpload"><?php echo $countUploadedNew - $countDownloaded ?></span> Data belum di download</p>
 
                            </div>
                         </div>
@@ -159,11 +170,12 @@ $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
                               <h4 class="card-title">Upload Summary</h4>
                            </div>
                            <div class="iq-card-header-toolbar d-flex align-items-center">
-                           <input type="number" class="form-control" id="selectingItem" oninput="selectingItemFunc()" placeholder="0" style="width: 100px;">
-                           <a onclick="downloadSelection()" style="cursor: pointer;"><i class="ri-file-download-fill mr-2"></i>Download Selected</a>
+                              <input type="number" class="form-control" id="selectingItem" oninput="selectingItemFunc()" placeholder="0" style="width: 100px;">
+                              <a onclick="downloadSelection()" style="cursor: pointer;"><i class="ri-file-download-fill mr-2"></i>Download Selected</a>
                            </div>
                         </div>
                         <div class="iq-card-body">
+                           <input type="checkbox" id="withOldData"> Dengan Data Lama
                            <div class="table-responsive">
                               <div class="table-container">
                               <table id="table-ektp" class="table mb-0 table-borderless">
@@ -329,10 +341,12 @@ $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
                 type: "GET",
                 data: { func: 'getCountData' },
                 success: function(response) {
-                   $('#uploadCounter').text(response.countUploaded);
-                   $('#downloadCounter').text(response.countDownloaded);
-                   const remaining = response.countUploaded - response.countDownloaded;
-                   $('#remainingUpload').text(remaining);
+                  const uploaded = parseInt(response.countUploaded) + parseInt(response.countUploadedNew);
+                  const downloaded = parseInt(response.countUploaded) + parseInt(response.countDownloaded);
+                  $('#uploadCounter').text(uploaded);
+                  $('#downloadCounter').text(downloaded);
+                  const remaining = parseInt(response.countUploadedNew) - parseInt(response.countDownloaded);
+                  $('#remainingUpload').text(remaining);
 
                    console.log($('#remainingUpload').text());
                 },
@@ -351,7 +365,8 @@ $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
                kelurahan: $('#filter-kelurahan').val().toLowerCase(),
                kecamatan: $('#filter-kecamatan').val().toLowerCase(),
                uploadDate: $('#filter-upload-date').val().toLowerCase(),
-               status: $('#filter-status').val().toLowerCase()
+               status: $('#filter-status').val().toLowerCase(),
+               with_old_data: $('#withOldData').is(':checked')
             };
 
             $.ajax({

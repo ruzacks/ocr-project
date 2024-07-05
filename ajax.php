@@ -50,7 +50,7 @@ if (isset($_GET['func']) || isset($_POST['func'])) {
 
 function getAllData() {
     $conn = getConn();
-    $query = "SELECT nik, nama, address_kel_des, address_kec, upload_date, status, upload_by, old_data FROM ektps";
+    $query = "SELECT nik, nama, address_kel_des, address_kec, upload_date, status, upload_by, old_data FROM ektps WHERE old_data = 0";
 
     // Add the limit of 1000 records
     $query .= " LIMIT 2000";
@@ -122,10 +122,17 @@ function getFilteredData(){
         $whereClauses[] = "status = '$status'";
     }
 
+    if ($_GET['with_old_data'] == 'true'){
+        $whereClauses[] = "old_data = 1";
+    } else {
+        $whereClauses[] = "old_data = 0";
+    }
+
     // If there are any WHERE clauses, concatenate them with AND
     if (!empty($whereClauses)) {
         $query .= " WHERE " . implode(" AND ", $whereClauses);
     }
+
 
     // Add the limit of 1000 records
     $query .= " LIMIT 2000";
@@ -356,7 +363,7 @@ function downloadExcelAndData() {
         }
 
         //update status
-        $sqlUpdate = "UPDATE ektps SET status = 'downloaded' WHERE nik IN ($niksString)";
+        $sqlUpdate = "UPDATE ektps SET status = 'downloaded' WHERE nik IN ($niksString) AND old_data = 0";
         $result = $conn->query($sqlUpdate);
 
         if(strlen($niksString) <= 20){
@@ -408,7 +415,7 @@ function changeStatus(){
     $niksString = "'" . implode("','", $niks) . "'";
 
 
-    $sqlUpdate = "UPDATE ektps SET status = '$status' WHERE nik IN ($niksString)";
+    $sqlUpdate = "UPDATE ektps SET status = '$status' WHERE nik IN ($niksString) AND old_data = 0";
     $result = $conn->query($sqlUpdate);
 
     $response = [];
@@ -437,24 +444,55 @@ function deleteNik(){
     $niks = array_map(function($item) { return $item['nik']; }, $payload);
     $niksString = "'" . implode("','", $niks) . "'";
 
-    $sqlDelete = "DELETE from ektps WHERE nik IN ($niksString)";
-    $result = $conn->query($sqlDelete);
+    // Retrieve and delete records with old_data = 0
+    $sqlSelectDelete = "SELECT nik FROM ektps WHERE nik IN ($niksString) AND old_data = 0";
+    $resultSelectDelete = $conn->query($sqlSelectDelete);
 
     $response = [];
-    if ($result) {
+    if ($resultSelectDelete) {
+        $deleteNiks = [];
+        while ($row = $resultSelectDelete->fetch_assoc()) {
+            $deleteNiks[] = $row['nik'];
+        }
+        if (!empty($deleteNiks)) {
+            $deleteNiksString = "'" . implode("','", $deleteNiks) . "'";
+            $sqlDelete = "DELETE from ektps WHERE nik IN ($deleteNiksString)";
+            $resultDelete = $conn->query($sqlDelete);
 
-        foreach ($niks as $nik) {
-            $filePath = __DIR__ . "/pdfs/$nik.pdf";
-            if (file_exists($filePath)) {
-                unlink($filePath);
+            if ($resultDelete) {
+                foreach ($deleteNiks as $nik) {
+                    $filePath = __DIR__ . "/pdfs/$nik.pdf";
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+                }
+                $response['status'] = "success";
+                $response['message'] = "Data Deleted";
+            } else {
+                $response['status'] = "error";
+                $response['message'] = "Failed to delete records";
             }
+        } else {
+            $response['status'] = "error";
+            $response['message'] = "Failed to delete records";
         }
 
-        $response['status'] = "success";
-        $response['message'] = "Data Deleted";
+        // Handle records with old_data = 1
+        $sqlSelectOld = "SELECT nik FROM ektps WHERE nik IN ($niksString) AND old_data = 1";
+        $resultSelectOld = $conn->query($sqlSelectOld);
+        if ($resultSelectOld) {
+            $oldNiks = [];
+            while ($row = $resultSelectOld->fetch_assoc()) {
+                $oldNiks[] = $row['nik'];
+            }
+            if (!empty($oldNiks)) {
+                $response['old_data'] = $oldNiks;
+                $response['message'] .= ". Records lama tidak dapat di delete: " . implode(', ', $oldNiks);
+            }
+        }
     } else {
         $response['status'] = "error";
-        $response['message'] = "Failed to delete";
+        $response['message'] = "Failed to retrieve records";
     }
 
     echo json_encode($response);
@@ -534,19 +572,30 @@ function getCountData() {
 
     // Uploaded count query
     if ($isChecker) {
-        $sqlUploaded = "SELECT COUNT(*) as count FROM ektps WHERE upload_by = '$username'";
+        $sqlUploaded = "SELECT COUNT(*) as count FROM ektps WHERE upload_by = '$username' AND old_data = 1";
     } else {
-        $sqlUploaded = "SELECT COUNT(*) as count FROM ektps";
+        $sqlUploaded = "SELECT COUNT(*) as count FROM ektps WHERE old_data = 1";
     }
 
     $resultUploaded = $conn->query($sqlUploaded);
     $countUploaded = mysqli_fetch_assoc($resultUploaded)['count'];
 
+     // Uploaded count query
+     if ($isChecker) {
+        $sqlUploadedNew = "SELECT COUNT(*) as count FROM ektps WHERE upload_by = '$username' AND old_data = 0";
+    } else {
+        $sqlUploadedNew = "SELECT COUNT(*) as count FROM ektps WHERE old_data = 0";
+    }
+
+    $resultUploadedNew = $conn->query($sqlUploadedNew);
+    $countUploadedNew = mysqli_fetch_assoc($resultUploadedNew)['count'];
+
+    
     // Downloaded count query
     if ($isChecker) {
-        $sqlDownloaded = "SELECT COUNT(*) as count FROM ektps WHERE status = 'downloaded' AND upload_by = '$username'";
+        $sqlDownloaded = "SELECT COUNT(*) as count FROM ektps WHERE status = 'downloaded' AND upload_by = '$username' AND old_data = 0";
     } else {
-        $sqlDownloaded = "SELECT COUNT(*) as count FROM ektps WHERE status = 'downloaded'";
+        $sqlDownloaded = "SELECT COUNT(*) as count FROM ektps WHERE status = 'downloaded' AND old_data = 0";
     }
 
     $resultDownloaded = $conn->query($sqlDownloaded);
@@ -556,6 +605,7 @@ function getCountData() {
     header('Content-Type: application/json');
     echo json_encode([
         'countUploaded' => $countUploaded,
+        'countUploadedNew' => $countUploadedNew,
         'countDownloaded' => $countDownloaded
     ]);
 }
