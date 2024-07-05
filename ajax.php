@@ -363,7 +363,7 @@ function downloadExcelAndData() {
         }
 
         //update status
-        $sqlUpdate = "UPDATE ektps SET status = 'downloaded' WHERE nik IN ($niksString) AND old_data = 0";
+        $sqlUpdate = "UPDATE ektps SET status = 'downloaded' WHERE nik IN ($niksString)";
         $result = $conn->query($sqlUpdate);
 
         if(strlen($niksString) <= 20){

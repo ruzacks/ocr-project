@@ -140,7 +140,14 @@ $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
                            <span class="float-right line-height-6">Uploaded</span>
                            <div class="clearfix"></div>
                            <div class="text-center">
-                              <h2 class="mb-0"><span class="counter" id="uploadCounter"><?php echo $countUploaded + $countUploadedNew ?></span><span></span></h2>
+                              <div class="row">
+                                 <div class="col-md-12 justify-content-between">
+                                    <h2 class="mb-0"><span class="counter" id="uploadCounter"><?php echo $countUploaded + $countUploadedNew ?></span><span> Data Lama</span></h2>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <h2 class="mb-0"><span class="counter" id="uploadCounterNew"><?php echo $countUploadedNew ?></span><span> Data Baru</span></h2>
+                                 </div>
+                              </div>
                            </div>
                         </div>
                         <div id="chart-1"></div>
@@ -341,9 +348,11 @@ $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
                 type: "GET",
                 data: { func: 'getCountData' },
                 success: function(response) {
-                  const uploaded = parseInt(response.countUploaded) + parseInt(response.countUploadedNew);
+                  const uploaded = parseInt(response.countUploaded);
+                  const uploadedNew =  parseInt(response.countUploadedNew);
                   const downloaded = parseInt(response.countUploaded) + parseInt(response.countDownloaded);
                   $('#uploadCounter').text(uploaded);
+                  $('#uploadCounterNew').text(uploadedNew);
                   $('#downloadCounter').text(downloaded);
                   const remaining = parseInt(response.countUploadedNew) - parseInt(response.countDownloaded);
                   $('#remainingUpload').text(remaining);
