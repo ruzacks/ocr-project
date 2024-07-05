@@ -160,7 +160,7 @@ $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
                            <span class="float-right line-height-6" >Downloaded</span>
                            <div class="clearfix"></div>
                            <div class="text-center">
-                              <h2 class="mb-0"><span class="counter" id="downloadCounter"><?php echo $countUploaded + $countDownloaded ?></span><span></span></h2>
+                              <h2 class="mb-0"><span class="counter" id="downloadCounter"><?php echo $countDownloaded ?></span><span></span></h2>
                               <p class="mb-0 text-secondary line-height"></i><span class="text-success" id="remainingUpload"><?php echo $countUploadedNew - $countDownloaded ?></span> Data belum di download</p>
 
                            </div>
@@ -350,7 +350,7 @@ $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
                 success: function(response) {
                   const uploaded = parseInt(response.countUploaded);
                   const uploadedNew =  parseInt(response.countUploadedNew);
-                  const downloaded = parseInt(response.countUploaded) + parseInt(response.countDownloaded);
+                  const downloaded = parseInt(response.countDownloaded);
                   $('#uploadCounter').text(uploaded);
                   $('#uploadCounterNew').text(uploadedNew);
                   $('#downloadCounter').text(downloaded);
