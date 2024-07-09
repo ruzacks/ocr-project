@@ -9,7 +9,9 @@ require 'vendor/autoload.php';
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use Google\Cloud\Storage\StorageClient;
 
+putenv('GOOGLE_APPLICATION_CREDENTIALS=/home/verb4874/gcsk/psyched-oxide-424402-a3-38779c1a080f.json'); // Replace with the path to your service account key
 
 if (isset($_GET['func']) || isset($_POST['func'])) {
     // Get the value of the 'func' parameter
@@ -60,11 +62,16 @@ function getAllData() {
     if ($result) {
         $data = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
+        $bucketName = 'verfak_ktp';
+        $storage = new StorageClient();
+        $bucket = $storage->bucket($bucketName);
+
         foreach ($data as &$record) {
             $nik = $record['nik'];
-            $pdfPath = "pdfs/$nik.pdf";
+            $objectName = $nik . '.pdf';
+            $object = $bucket->object($objectName);
 
-            if (file_exists($pdfPath)) {
+            if ($object->exists()) {
                 // Add additional data if the PDF exists
                 $record['file_exist'] = "yes";
             } else {
@@ -326,68 +333,82 @@ function downloadExcelAndData() {
         $writer->save($excelFilePath);
 
         // Create directories for each NIK and copy the corresponding PDF files
-        $pdfDir = $tempDir . '/pdf' ;
-        mkdir($pdfDir);
+        $bucketName = 'verfak_ktp';
+        $storage = new StorageClient();
+        $bucket = $storage->bucket($bucketName);
+        
+        // Create temporary directories
+        $tempDir = sys_get_temp_dir() . '/temp_' . uniqid();
+        $pdfDir = $tempDir . '/pdf';
+        mkdir($pdfDir, 0777, true);
+        
         foreach ($niks as $nik) {
-
-            // Assuming PDF files are named exactly as the NIK and located in the 'pdfs' directory
-            $pdfPath = 'pdfs/' . $nik . '.pdf';
-            if (file_exists($pdfPath)) {
-                copy($pdfPath, $pdfDir . '/' . $nik . '.pdf');
+            $objectName = $nik . '.pdf';
+            $pdfPath = $pdfDir . '/' . $objectName;
+        
+            try {
+                $object = $bucket->object($objectName);
+                if ($object->exists()) {
+                    $object->downloadToFile($pdfPath);
+                }
+            } catch (Exception $e) {
+                // Handle exception if the object doesn't exist or download fails
+                error_log('Failed to download ' . $objectName . ': ' . $e->getMessage());
             }
         }
-
+        
         // Create a ZIP archive containing the Excel file and the PDF directories
         $zip = new ZipArchive();
         $zipFilePath = $tempDir . '.zip';
         if ($zip->open($zipFilePath, ZipArchive::CREATE) === TRUE) {
             // Add the Excel file
             $zip->addFile($excelFilePath, 'data.xlsx');
-
+        
             // Add the PDF directories
-            $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($tempDir), RecursiveIteratorIterator::LEAVES_ONLY);
+            $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($pdfDir), RecursiveIteratorIterator::LEAVES_ONLY);
             foreach ($files as $name => $file) {
                 // Skip directories (they are added automatically)
                 if (!$file->isDir()) {
                     // Get real and relative path for current file
                     $filePath = $file->getRealPath();
                     $relativePath = substr($filePath, strlen($tempDir) + 1);
-
+        
                     // Add file to ZIP archive
                     $zip->addFile($filePath, $relativePath);
                 }
             }
-
+        
             // Close the ZIP archive
             $zip->close();
         }
-
-        //update status
+        
+        // Update status
+        $niksString = implode(',', array_map(function($nik) { return "'$nik'"; }, $niks));
         $sqlUpdate = "UPDATE ektps SET status = 'downloaded' WHERE nik IN ($niksString)";
         $result = $conn->query($sqlUpdate);
-
-        if(strlen($niksString) <= 20){
+        
+        if (strlen($niksString) <= 20) {
             $fileName = preg_replace('/\D/', '', $niksString);
         } else {
             $fileName = "data";
         }
-
+        
         // Set headers for download
         header('Content-Type: application/zip');
-        header('Content-Disposition: attachment;filename="'.$fileName.'.zip"');
+        header('Content-Disposition: attachment;filename="' . $fileName . '.zip"');
         header('Cache-Control: max-age=0');
-
+        
         // Send the ZIP file to the client
         readfile($zipFilePath);
-
+        
         // Clean up
-        array_map('unlink', glob("$tempDir/*.*"));
-        rmdir($tempDir);
+        array_map('unlink', glob("$pdfDir/*.*"));
+        rmdir($pdfDir);
         unlink($zipFilePath);
-
+        
         // Close the database connection
         $conn->close();
-
+        
         // Exit to prevent further script execution
         exit();
     } else {
@@ -460,10 +481,21 @@ function deleteNik(){
             $resultDelete = $conn->query($sqlDelete);
 
             if ($resultDelete) {
+                $bucketName = 'verfak_ktp';
+                $storage = new StorageClient();
+                $bucket = $storage->bucket($bucketName);
+
                 foreach ($deleteNiks as $nik) {
-                    $filePath = __DIR__ . "/pdfs/$nik.pdf";
-                    if (file_exists($filePath)) {
-                        unlink($filePath);
+                    $objectName = $nik . '.pdf';
+
+                    try {
+                        $object = $bucket->object($objectName);
+                        if ($object->exists()) {
+                            $object->delete();
+                        } 
+                    } catch (Exception $e) {
+                        // Handle exception if the deletion fails
+                        echo 'Error deleting file ' . $objectName . ': ' . $e->getMessage() . '<br>';
                     }
                 }
                 $response['status'] = "success";

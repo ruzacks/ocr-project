@@ -158,25 +158,51 @@ $imageFiles = array(
     // $_FILES['additional_file']['tmp_name'] // Image file uploaded through the form
 );
 
-$pdfFilePath = __DIR__. '/pdfs/' . $nik . '.pdf'; // Path to save the PDF file
 $pdf = imagesToPdf($imageFiles);
-$pdf->Output($pdfFilePath, 'F'); // Save the PDF file
 
-$pdfPath = 'pdfs/' . $nik . '.pdf';
+require 'vendor/autoload.php'; // Ensure you have the autoload file from composer
 
-if(file_exists($pdfPath)){
+use Google\Cloud\Storage\StorageClient;
+
+// Set up Google Cloud credentials
+putenv('GOOGLE_APPLICATION_CREDENTIALS=/home/verb4874/gcsk/psyched-oxide-424402-a3-38779c1a080f.json'); // Replace with the path to your service account key
+
+$bucketName = 'verfak_ktp';
+$storage = new StorageClient();
+$bucket = $storage->bucket($bucketName);
+
+$pdfContent = $pdf->Output('', 'S'); // Get PDF content as a string
+
+if ($pdfContent) {
     try {
+
         if ($stmt->execute()) {
             $response['status'] = "success";
             $response['message'] = "Data saved successfully";
         }
+
+        // Create a temporary stream and write the PDF content to it
+        $pdfStream = fopen('php://temp', 'r+');
+        fwrite($pdfStream, $pdfContent);
+        rewind($pdfStream);
+
+        // Upload the file to Google Cloud Storage
+        $bucket->upload(
+            $pdfStream,
+            [
+                'name' => $nik . '.pdf'
+            ]
+        );
+
+        // Close the stream
+        //fclose($pdfStream);
     } catch (mysqli_sql_exception $e) {
         $error_message = $e->getMessage();
         if (strpos($error_message, "Duplicate entry") !== false) {
             $response['status'] = "error";
             $response['message'] = "NIK sudah terdaftar";
         } else {
-            unlink($pdfFilePath);
+            $bucket->object($nik . '.pdf')->delete(); // Delete the uploaded object on error
             $response['status'] = "error";
             $response['message'] = "Error: " . $error_message;
         }
@@ -186,11 +212,7 @@ if(file_exists($pdfPath)){
     $response['message'] = "Gagal Menyimpan Data";
 }
 
-
 $stmt->close();
-
-
-
 $conn->close();
 
 header('Content-Type: application/json');
