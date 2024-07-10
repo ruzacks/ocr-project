@@ -325,19 +325,35 @@ $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
          let dataCache = [];
 
          function getAllData() {
+            // Show loading dialog using SweetAlert
+            Swal.fire({
+               title: 'Loading...',
+               allowOutsideClick: false,
+               onBeforeOpen: () => {
+                     Swal.showLoading();
+               }
+            });
 
             $.ajax({
-                url: "ajax.php",
-                type: "GET",
-                data: { func: 'getAllData' },
-                success: function(response) {
-                    dataCache = response;
-                    setupPagination(dataCache.length, itemsPerPage);
-                    displayPage(currentPage);
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error: " + error);
-                }
+               url: "ajax.php",
+               type: "GET",
+               data: { func: 'getAllData' },
+               success: function(response) {
+                     // Close loading dialog after successful response
+                     Swal.close();
+
+                     // Process response data
+                     dataCache = response;
+                     setupPagination(dataCache.length, itemsPerPage);
+                     displayPage(currentPage);
+               },
+               error: function(xhr, status, error) {
+                     // Close loading dialog on error (optional)
+                     Swal.close();
+
+                     // Handle error
+                     console.error("Error: " + error);
+               }
             });
          }
 
@@ -366,9 +382,18 @@ $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
          
          }
 
-         function getFilteredData(){
+         function getFilteredData() {
+            // Show loading dialog using SweetAlert
+            Swal.fire({
+               title: 'Loading...',
+               allowOutsideClick: false,
+               onBeforeOpen: () => {
+                     Swal.showLoading();
+               }
+            });
+
             const filters = {
-               func : 'getFilteredData',
+               func: 'getFilteredData',
                nik: $('#filter-nik').val().toLowerCase(),
                nama: $('#filter-nama').val().toLowerCase(),
                kelurahan: $('#filter-kelurahan').val().toLowerCase(),
@@ -381,18 +406,27 @@ $countDownloaded = mysqli_fetch_assoc($resultDownloaded)['count'];
             $.ajax({
                url: "ajax.php",
                type: "GET",
-               data : filters,
+               data: filters,
                success: function(response) {
-                    dataCache = response;
-                    setupPagination(dataCache.length, itemsPerPage);
-                    displayPage(currentPage);
-                    console.log(dataCache);
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error: " + error);
-                }
+                     // Close loading dialog after successful response
+                     Swal.close();
+
+                     // Process response data
+                     dataCache = response;
+                     setupPagination(dataCache.length, itemsPerPage);
+                     displayPage(currentPage);
+                     console.log(dataCache);
+               },
+               error: function(xhr, status, error) {
+                     // Close loading dialog on error (optional)
+                     Swal.close();
+
+                     // Handle error
+                     console.error("Error: " + error);
+               }
             });
          }
+
 
 
 
