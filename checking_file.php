@@ -4,6 +4,9 @@ require 'vendor/autoload.php';
 
 use Google\Cloud\Storage\StorageClient;
 
+// Increase memory limit
+ini_set('memory_limit', '512M');
+
 // Set up Google Cloud credentials
 putenv('GOOGLE_APPLICATION_CREDENTIALS=/home/verb4874/gcsk/psyched-oxide-424402-a3-38779c1a080f.json'); // Replace with the path to your service account key
 
