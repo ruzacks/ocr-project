@@ -14,7 +14,7 @@ putenv('GOOGLE_APPLICATION_CREDENTIALS=/home/verb4874/gcsk/psyched-oxide-424402-
 $localDirectory = __DIR__ . '/pdfs';
 $gcsBucketName = 'verfak_ktp';
 $zipFilename = 'missing_files.zip';
-$maxZipSize = 2 * 1024 * 1024; // 10MB in bytes
+$maxZipSize = 10 * 1024 * 1024; // 10MB in bytes
 
 function listLocalFiles($directory) {
     $files = array_diff(scandir($directory), ['.', '..']);
@@ -39,7 +39,8 @@ function listGcsFiles($bucketName) {
 function findMissingFiles($localFiles, $gcsFiles) {
     $localFileNames = array_map('basename', $localFiles);
     $gcsFileNames = array_map('basename', $gcsFiles);
-    return array_diff($localFileNames, $gcsFileNames);
+    $missingFiles = array_diff($localFileNames, $gcsFileNames);
+    return array_slice($missingFiles, 0, 100); // Limit to the first 100 missing files
 }
 
 function zipMissingFiles($missingFiles, $sourceDirectory, $zipFilename, $maxZipSize) {
@@ -85,7 +86,7 @@ function createDownload($zipFilename) {
 $localFiles = listLocalFiles($localDirectory);
 $gcsFiles = listGcsFiles($gcsBucketName);
 
-// Find missing files
+// Find missing files (limit to the first 100)
 $missingFiles = findMissingFiles($localFiles, $gcsFiles);
 
 // Zip missing files with a size limit of 10MB
