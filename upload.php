@@ -167,7 +167,7 @@ use Google\Cloud\Storage\StorageClient;
 // Set up Google Cloud credentials
 putenv('GOOGLE_APPLICATION_CREDENTIALS=/home/verb4874/gcsk/psyched-oxide-424402-a3-38779c1a080f.json'); // Replace with the path to your service account key
 
-$bucketName = 'verfak_ktp';
+$bucketName = 'verfak_ktp_2';
 $storage = new StorageClient();
 $bucket = $storage->bucket($bucketName);
 

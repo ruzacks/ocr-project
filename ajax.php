@@ -62,7 +62,7 @@ function getAllData() {
     if ($result) {
         $data = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
-        $bucketName = 'verfak_ktp';
+        $bucketName = 'verfak_ktp_2';
         $storage = new StorageClient();
         $bucket = $storage->bucket($bucketName);
 
@@ -165,12 +165,33 @@ function getFilteredData(){
     if ($result) {
         $data = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
+        $bucketName = 'verfak_ktp_2';
+        $storage = new StorageClient();
+        $bucket = $storage->bucket($bucketName);
+
+        $objectNames = [];
         foreach ($data as &$record) {
             $nik = $record['nik'];
-            $pdfPath = "pdfs/$nik.pdf";
+            $objectNames[] = $nik . '.pdf';
+        }
 
-            if (file_exists($pdfPath)) {
-                // Add additional data if the PDF exists
+        // Batch check file existence
+        $objects = $bucket->objects(['prefix' => '']); // Fetch all objects in the bucket (adjust as per your need)
+
+        $existingObjects = [];
+        foreach ($objects as $object) {
+            $objectName = $object->name();
+            if (in_array($objectName, $objectNames)) {
+                $existingObjects[$objectName] = true;
+            }
+        }
+
+        // Update records with file existence information
+        foreach ($data as &$record) {
+            $nik = $record['nik'];
+            $objectName = $nik . '.pdf';
+            
+            if (isset($existingObjects[$objectName])) {
                 $record['file_exist'] = "yes";
             } else {
                 $record['file_exist'] = "no";
@@ -349,7 +370,7 @@ function downloadExcelAndData() {
         $writer->save($excelFilePath);
 
         // Create directories for each NIK and copy the corresponding PDF files
-        $bucketName = 'verfak_ktp';
+        $bucketName = 'verfak_ktp_2';
         $storage = new StorageClient();
         $bucket = $storage->bucket($bucketName);
         
@@ -497,7 +518,7 @@ function deleteNik(){
             $resultDelete = $conn->query($sqlDelete);
 
             if ($resultDelete) {
-                $bucketName = 'verfak_ktp';
+                $bucketName = 'verfak_ktp_2';
                 $storage = new StorageClient();
                 $bucket = $storage->bucket($bucketName);
 
