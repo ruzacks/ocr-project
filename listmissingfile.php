@@ -9,7 +9,7 @@ putenv('GOOGLE_APPLICATION_CREDENTIALS=/home/verb4874/gcsk/psyched-oxide-424402-
 
 // Define your directories and bucket name
 $localDirectory = __DIR__ . '/pdfs';
-$gcsBucketName = 'verfak_ktp';
+$gcsBucketName = 'verfak_ktp_2';
 $txtFilename = 'missing_files.txt';
 
 function listLocalFiles($directory) {
