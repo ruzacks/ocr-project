@@ -11,6 +11,7 @@ putenv('GOOGLE_APPLICATION_CREDENTIALS=/home/verb4874/gcsk/psyched-oxide-424402-
 $localDirectory = __DIR__ . '/pdfs';
 $gcsBucketName = 'verfak_ktp';
 $zipFilename = 'missing_files.zip';
+$maxZipSize = 10 * 1024 * 1024; // 10MB in bytes
 
 function listLocalFiles($directory) {
     $files = array_diff(scandir($directory), ['.', '..']);
@@ -38,16 +39,22 @@ function findMissingFiles($localFiles, $gcsFiles) {
     return array_diff($localFileNames, $gcsFileNames);
 }
 
-function zipMissingFiles($missingFiles, $sourceDirectory, $zipFilename) {
+function zipMissingFiles($missingFiles, $sourceDirectory, $zipFilename, $maxZipSize) {
     $zip = new ZipArchive();
     if ($zip->open($zipFilename, ZipArchive::CREATE) !== TRUE) {
         exit("Cannot open <$zipFilename>\n");
     }
 
+    $currentSize = 0;
     foreach ($missingFiles as $file) {
         $filePath = $sourceDirectory . DIRECTORY_SEPARATOR . $file;
         if (file_exists($filePath)) {
+            $fileSize = filesize($filePath);
+            if ($currentSize + $fileSize > $maxZipSize) {
+                break; // Stop adding files if the next file exceeds the 10MB limit
+            }
             $zip->addFile($filePath, $file);
+            $currentSize += $fileSize;
         }
     }
 
@@ -78,8 +85,8 @@ $gcsFiles = listGcsFiles($gcsBucketName);
 // Find missing files
 $missingFiles = findMissingFiles($localFiles, $gcsFiles);
 
-// Zip missing files
-zipMissingFiles($missingFiles, $localDirectory, $zipFilename);
+// Zip missing files with a size limit of 10MB
+zipMissingFiles($missingFiles, $localDirectory, $zipFilename, $maxZipSize);
 
 // Create a downloadable zip file
 createDownload($zipFilename);
