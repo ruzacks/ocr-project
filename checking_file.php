@@ -4,9 +4,6 @@ require 'vendor/autoload.php';
 
 use Google\Cloud\Storage\StorageClient;
 
-// Increase memory limit
-ini_set('memory_limit', '512M');
-
 // Set up Google Cloud credentials
 putenv('GOOGLE_APPLICATION_CREDENTIALS=/home/verb4874/gcsk/psyched-oxide-424402-a3-38779c1a080f.json'); // Replace with the path to your service account key
 
@@ -14,7 +11,6 @@ putenv('GOOGLE_APPLICATION_CREDENTIALS=/home/verb4874/gcsk/psyched-oxide-424402-
 $localDirectory = __DIR__ . '/pdfs';
 $gcsBucketName = 'verfak_ktp';
 $zipFilename = 'missing_files.zip';
-$maxZipSize = 10 * 1024 * 1024; // 10MB in bytes
 
 function listLocalFiles($directory) {
     $files = array_diff(scandir($directory), ['.', '..']);
@@ -39,60 +35,46 @@ function listGcsFiles($bucketName) {
 function findMissingFiles($localFiles, $gcsFiles) {
     $localFileNames = array_map('basename', $localFiles);
     $gcsFileNames = array_map('basename', $gcsFiles);
-    $missingFiles = array_diff($localFileNames, $gcsFileNames);
-    return array_slice($missingFiles, 0, 100); // Limit to the first 100 missing files
+    return array_diff($localFileNames, $gcsFileNames);
 }
 
-function zipMissingFiles($missingFiles, $sourceDirectory, $zipFilename, $maxZipSize) {
+function createZipFile($missingFiles, $localDirectory, $zipFilename) {
+    // Initialize zip archive
     $zip = new ZipArchive();
     if ($zip->open($zipFilename, ZipArchive::CREATE) !== TRUE) {
-        exit("Cannot open <$zipFilename>\n");
+        exit("Cannot open $zipFilename\n");
     }
 
-    $currentSize = 0;
+    // Add each missing file to the zip archive
     foreach ($missingFiles as $file) {
-        $filePath = $sourceDirectory . DIRECTORY_SEPARATOR . $file;
+        $filePath = $localDirectory . '/' . $file;
         if (file_exists($filePath)) {
-            $fileSize = filesize($filePath);
-            if ($currentSize + $fileSize > $maxZipSize) {
-                break; // Stop adding files if the next file exceeds the 10MB limit
-            }
             $zip->addFile($filePath, $file);
-            $currentSize += $fileSize;
+        } else {
+            echo "File not found: $file<br>";
         }
     }
 
+    // Close and save the zip archive
     $zip->close();
-}
-
-function createDownload($zipFilename) {
-    if (file_exists($zipFilename)) {
-        header('Content-Type: application/zip');
-        header('Content-Disposition: attachment; filename="' . basename($zipFilename) . '"');
-        header('Content-Length: ' . filesize($zipFilename));
-
-        flush();
-        readfile($zipFilename);
-
-        // Delete the zip file after download
-        unlink($zipFilename);
-        exit();
-    } else {
-        exit("Failed to create zip file $zipFilename\n");
-    }
 }
 
 // List files in local directory and GCS bucket
 $localFiles = listLocalFiles($localDirectory);
 $gcsFiles = listGcsFiles($gcsBucketName);
 
-// Find missing files (limit to the first 100)
+// Find missing files
 $missingFiles = findMissingFiles($localFiles, $gcsFiles);
 
-// Zip missing files with a size limit of 10MB
-zipMissingFiles($missingFiles, $localDirectory, $zipFilename, $maxZipSize);
+// Create a zip file containing the missing files
+createZipFile($missingFiles, $localDirectory, $zipFilename);
 
-// Create a downloadable zip file
-createDownload($zipFilename);
+// Function to create download link for the zip file
+function createDownloadLink($zipFilename) {
+    echo '<a href="download.php?file=' . urlencode($zipFilename) . '">Download Zip File of Missing Files</a>';
+}
+
+// Output download link for the zip file
+createDownloadLink($zipFilename);
 
 ?>
