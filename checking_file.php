@@ -14,7 +14,7 @@ putenv('GOOGLE_APPLICATION_CREDENTIALS=/home/verb4874/gcsk/psyched-oxide-424402-
 $localDirectory = __DIR__ . '/pdfs';
 $gcsBucketName = 'verfak_ktp';
 $zipFilename = 'missing_files.zip';
-$maxZipSize = 10 * 1024 * 1024; // 10MB in bytes
+$maxZipSize = 2 * 1024 * 1024; // 10MB in bytes
 
 function listLocalFiles($directory) {
     $files = array_diff(scandir($directory), ['.', '..']);
