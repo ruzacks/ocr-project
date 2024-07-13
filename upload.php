@@ -162,18 +162,18 @@ $pdf = imagesToPdf($imageFiles);
 
 require 'vendor/autoload.php'; // Ensure you have the autoload file from composer
 
-use Google\Cloud\Storage\StorageClient;
+// use Google\Cloud\Storage\StorageClient;
 
-// Set up Google Cloud credentials
-putenv('GOOGLE_APPLICATION_CREDENTIALS=/home/verb4874/gcsk/psyched-oxide-424402-a3-38779c1a080f.json'); // Replace with the path to your service account key
+// // Set up Google Cloud credentials
+// putenv('GOOGLE_APPLICATION_CREDENTIALS=/home/verb4874/gcsk/psyched-oxide-424402-a3-38779c1a080f.json'); // Replace with the path to your service account key
 
-$bucketName = 'verfak_ktp_2';
-$storage = new StorageClient();
-$bucket = $storage->bucket($bucketName);
+$pdfFilePath = '__DIR__'. '/pdfs/' . $nik . '.pdf'; // Path to save the PDF file
+$pdf = imagesToPdf($imageFiles);
+$pdf->Output($pdfFilePath, 'F'); // Save the PDF file
 
-$pdfContent = $pdf->Output('', 'S'); // Get PDF content as a string
+$pdfPath = 'pdfs/' . $nik . '.pdf';
 
-if ($pdfContent) {
+if (file_exists($pdfPath)){
     try {
 
         if ($stmt->execute()) {
@@ -181,21 +181,21 @@ if ($pdfContent) {
             $response['message'] = "Data saved successfully";
         }
 
-        // Create a temporary stream and write the PDF content to it
-        $pdfStream = fopen('php://temp', 'r+');
-        fwrite($pdfStream, $pdfContent);
-        rewind($pdfStream);
+        // // Create a temporary stream and write the PDF content to it
+        // $pdfStream = fopen('php://temp', 'r+');
+        // fwrite($pdfStream, $pdfContent);
+        // rewind($pdfStream);
 
-        // Upload the file to Google Cloud Storage
-        $bucket->upload(
-            $pdfStream,
-            [
-                'name' => $nik . '.pdf'
-            ]
-        );
+        // // Upload the file to Google Cloud Storage
+        // $bucket->upload(
+        //     $pdfStream,
+        //     [
+        //         'name' => $nik . '.pdf'
+        //     ]
+        // );
 
-        // Close the stream
-        //fclose($pdfStream);
+        // // Close the stream
+        // //fclose($pdfStream);
     } catch (mysqli_sql_exception $e) {
         $error_message = $e->getMessage();
         if (strpos($error_message, "Duplicate entry") !== false) {

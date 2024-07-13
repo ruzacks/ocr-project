@@ -11,7 +11,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use Google\Cloud\Storage\StorageClient;
 
-putenv('GOOGLE_APPLICATION_CREDENTIALS=/home/verb4874/gcsk/psyched-oxide-424402-a3-38779c1a080f.json'); // Replace with the path to your service account key
+putenv('GOOGLE_APPLICATION_CREDENTIALS=psyched-oxide-424402-a3-38779c1a080f.json'); // Replace with the path to your service account key
 
 if (isset($_GET['func']) || isset($_POST['func'])) {
     // Get the value of the 'func' parameter
@@ -62,33 +62,33 @@ function getAllData() {
     if ($result) {
         $data = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
-        $bucketName = 'verfak_ktp_2';
-        $storage = new StorageClient();
-        $bucket = $storage->bucket($bucketName);
+        // $bucketName = 'verfak_ktp_2';
+        // $storage = new StorageClient();
+        // $bucket = $storage->bucket($bucketName);
 
-        $objectNames = [];
-        foreach ($data as &$record) {
-            $nik = $record['nik'];
-            $objectNames[] = $nik . '.pdf';
-        }
+        // $objectNames = [];
+        // foreach ($data as &$record) {
+        //     $nik = $record['nik'];
+        //     $pdfPath = "pdfs/$nik.pdf";
+        // }
 
-        // Batch check file existence
-        $objects = $bucket->objects(['prefix' => '']); // Fetch all objects in the bucket (adjust as per your need)
+        // // Batch check file existence
+        // $objects = $bucket->objects(['prefix' => '']); // Fetch all objects in the bucket (adjust as per your need)
 
-        $existingObjects = [];
-        foreach ($objects as $object) {
-            $objectName = $object->name();
-            if (in_array($objectName, $objectNames)) {
-                $existingObjects[$objectName] = true;
-            }
-        }
+        // $existingObjects = [];
+        // foreach ($objects as $object) {
+        //     $objectName = $object->name();
+        //     if (in_array($objectName, $objectNames)) {
+        //         $existingObjects[$objectName] = true;
+        //     }
+        // }
 
         // Update records with file existence information
         foreach ($data as &$record) {
             $nik = $record['nik'];
-            $objectName = $nik . '.pdf';
+            $pdfPath = "pdfs/$nik.pdf";
             
-            if (isset($existingObjects[$objectName])) {
+            if (file_exists($pdfPath)) {
                 $record['file_exist'] = "yes";
             } else {
                 $record['file_exist'] = "no";
@@ -169,29 +169,11 @@ function getFilteredData(){
         $storage = new StorageClient();
         $bucket = $storage->bucket($bucketName);
 
-        $objectNames = [];
         foreach ($data as &$record) {
             $nik = $record['nik'];
-            $objectNames[] = $nik . '.pdf';
-        }
-
-        // Batch check file existence
-        $objects = $bucket->objects(['prefix' => '']); // Fetch all objects in the bucket (adjust as per your need)
-
-        $existingObjects = [];
-        foreach ($objects as $object) {
-            $objectName = $object->name();
-            if (in_array($objectName, $objectNames)) {
-                $existingObjects[$objectName] = true;
-            }
-        }
-
-        // Update records with file existence information
-        foreach ($data as &$record) {
-            $nik = $record['nik'];
-            $objectName = $nik . '.pdf';
+            $pdfPath = "pdfs/$nik.pdf";
             
-            if (isset($existingObjects[$objectName])) {
+            if (file_exists($pdfPath)) {
                 $record['file_exist'] = "yes";
             } else {
                 $record['file_exist'] = "no";
@@ -363,34 +345,26 @@ function downloadExcelAndData() {
         // Create a temporary directory to store the Excel file and the PDF files
         $tempDir = sys_get_temp_dir() . '/data_' . uniqid();
         mkdir($tempDir);
-
+'-------------------'
         // Save the Excel file to the temporary directory
         $excelFilePath = $tempDir . '/data.xlsx';
         $writer = new Xlsx($spreadsheet);
         $writer->save($excelFilePath);
 
         // Create directories for each NIK and copy the corresponding PDF files
-        $bucketName = 'verfak_ktp_2';
-        $storage = new StorageClient();
-        $bucket = $storage->bucket($bucketName);
+        // $bucketName = 'verfak_ktp_2';
+        // $storage = new StorageClient();
+        // $bucket = $storage->bucket($bucketName);
         
         // Create temporary directories
-        $tempDir = sys_get_temp_dir() . '/temp_' . uniqid();
         $pdfDir = $tempDir . '/pdf';
         mkdir($pdfDir, 0777, true);
         
         foreach ($niks as $nik) {
-            $objectName = $nik . '.pdf';
-            $pdfPath = $pdfDir . '/' . $objectName;
+            $pdfPath = "pdfs/$nik.pdf";
         
-            try {
-                $object = $bucket->object($objectName);
-                if ($object->exists()) {
-                    $object->downloadToFile($pdfPath);
-                }
-            } catch (Exception $e) {
-                // Handle exception if the object doesn't exist or download fails
-                error_log('Failed to download ' . $objectName . ': ' . $e->getMessage());
+            if (file_exists($pdfPath)) {
+                copy($pdfPath, $pdfDir . '/' . $nik . '.pdf');
             }
         }
         
@@ -518,21 +492,14 @@ function deleteNik(){
             $resultDelete = $conn->query($sqlDelete);
 
             if ($resultDelete) {
-                $bucketName = 'verfak_ktp_2';
-                $storage = new StorageClient();
-                $bucket = $storage->bucket($bucketName);
+                // $bucketName = 'verfak_ktp_2';
+                // $storage = new StorageClient();
+                // $bucket = $storage->bucket($bucketName);
 
                 foreach ($deleteNiks as $nik) {
-                    $objectName = $nik . '.pdf';
-
-                    try {
-                        $object = $bucket->object($objectName);
-                        if ($object->exists()) {
-                            $object->delete();
-                        } 
-                    } catch (Exception $e) {
-                        // Handle exception if the deletion fails
-                        echo 'Error deleting file ' . $objectName . ': ' . $e->getMessage() . '<br>';
+                    $filePath = __DIR__ . "/pdfs/$nik.pdf";
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
                     }
                 }
                 $response['status'] = "success";
