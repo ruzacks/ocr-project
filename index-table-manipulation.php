@@ -396,8 +396,9 @@
         let kecamatan = $('#filter-kecamatan').val().toLowerCase();
         let uploadDate = $('#filter-upload-date').val().toLowerCase();
         let status = $('#filter-status').val().toLowerCase();
+        let withOldData = $('#withOldData').is(':checked');
 
-    if (nik || nama || kelurahan || kecamatan || uploadDate || status) {
+    if (nik || nama || kelurahan || kecamatan || uploadDate || status || withOldData) {
        await getFilteredData();
     } else {
        await getAllData();
