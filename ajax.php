@@ -11,7 +11,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use Google\Cloud\Storage\StorageClient;
 
-putenv('GOOGLE_APPLICATION_CREDENTIALS=psyched-oxide-424402-a3-38779c1a080f.json'); // Replace with the path to your service account key
+putenv('GOOGLE_APPLICATION_CREDENTIALS=/home/verb4874/gcsk/psyched-oxide-424402-a3-38779c1a080f.json'); 
 
 if (isset($_GET['func']) || isset($_POST['func'])) {
     // Get the value of the 'func' parameter
