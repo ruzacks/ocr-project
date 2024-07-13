@@ -167,7 +167,7 @@ require 'vendor/autoload.php'; // Ensure you have the autoload file from compose
 // // Set up Google Cloud credentials
 // putenv('GOOGLE_APPLICATION_CREDENTIALS=/home/verb4874/gcsk/psyched-oxide-424402-a3-38779c1a080f.json'); // Replace with the path to your service account key
 
-$pdfFilePath = '__DIR__'. '/pdfs/' . $nik . '.pdf'; // Path to save the PDF file
+$pdfFilePath = __DIR__. '/pdfs/' . $nik . '.pdf'; // Path to save the PDF file
 $pdf = imagesToPdf($imageFiles);
 $pdf->Output($pdfFilePath, 'F'); // Save the PDF file
 

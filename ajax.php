@@ -345,7 +345,7 @@ function downloadExcelAndData() {
         // Create a temporary directory to store the Excel file and the PDF files
         $tempDir = sys_get_temp_dir() . '/data_' . uniqid();
         mkdir($tempDir);
-'-------------------'
+
         // Save the Excel file to the temporary directory
         $excelFilePath = $tempDir . '/data.xlsx';
         $writer = new Xlsx($spreadsheet);
